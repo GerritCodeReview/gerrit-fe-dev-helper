@@ -1,0 +1,4 @@
+dist
+node_modules
+package-lock.json
+gerrit_fe_dev_helper.zip
