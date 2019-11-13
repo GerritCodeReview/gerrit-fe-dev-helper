@@ -1,0 +1,44 @@
+[
+  {
+    "disabled": false,
+    "target": ".*play.google.com.*",
+    "operator": "block",
+    "destination": ""
+  },
+  {
+    "disabled": false,
+    "target": ".*csp.withgoogle.com.*",
+    "operator": "block",
+    "destination": ""
+  },
+  {
+    "disabled": false,
+    "target": ".*www.google-analytics.com.*",
+    "operator": "block",
+    "destination": ""
+  },
+  {
+    "disabled": false,
+    "target": "(.*)cdn.googlesource.com/polygerrit_ui/[0-9.]+/elements/.*",
+    "operator": "redirect",
+    "destination": "http://localhost:8081/elements/gr-app.html"
+  },
+  {
+    "disabled": false,
+    "target": "(.*)cdn.googlesource.com/polygerrit_ui/[0-9.]+/styles/",
+    "operator": "redirect",
+    "destination": "http://localhost:8081/styles/"
+  },
+  {
+    "disabled": false,
+    "target": "",
+    "operator": "injectJSCode",
+    "destination": "\n  const app = document.createElement(\"gr-app\");\n  app.id = \"app\";\n  document.querySelector(\"#app\").replaceWith(app);\n  "
+  },
+  {
+    "disabled": false,
+    "target": "",
+    "operator": "injectHtmlCode",
+    "destination": "<span style=\"color: white;font-weight:bold;padding:10px;z-index:10000;display:block;position:fixed;bottom:0;right:0;background-color:red;\">Gerrit dev helper is enabled</span>"
+  }
+]
