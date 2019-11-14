@@ -227,6 +227,10 @@ function checkCurrentTab() {
   });
 }
 
+// check this so extension always have the right status
+// even after page refreshes / reloads etc
+setInterval(() => checkCurrentTab(), 1000);
+
 // when removed, clear
 chrome.tabs.onRemoved.addListener(tabId => {
   TabStates.delete(tabId);

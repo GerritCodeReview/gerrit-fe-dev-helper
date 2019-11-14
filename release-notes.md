@@ -1,3 +1,7 @@
+#### v0.0.3
+
+- Hotfix
+
 #### v0.0.2
 
 - Remove restriction on gerrit sites (some features won't work if its not a valid gerrit site)

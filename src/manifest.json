@@ -2,7 +2,7 @@
     "manifest_version": 2,
     "name": "Gerrit FE Dev Helper",
     "description": "This extension can help you development on gerrit sites, frontend specifically",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "browser_action": {
       "default_icon": "gray-32.png",
       "default_title": "Gerrit FE Dev Helper"
