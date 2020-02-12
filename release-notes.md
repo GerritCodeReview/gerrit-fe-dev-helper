@@ -1,3 +1,7 @@
+#### v0.0.4
+
+- A better way to wait for Gerrit when injecting html plugins
+
 #### v0.0.3
 
 - Hotfix
