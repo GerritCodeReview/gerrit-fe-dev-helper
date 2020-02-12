@@ -7,15 +7,18 @@ function nextTick(ts: number) {
 }
 
 // Since content-script can not access window.Gerrit,
-// here checks the readiness based on # of imports
-// (as plugin will inject more html imports once added)
+// here checks the readiness based on #mainHeader element
 const onGerritReady = async () => {
-  let importLinks = document.querySelectorAll("link[rel=import]");
-  let gerritReady = importLinks && importLinks.length > 2;
-  while (!gerritReady) {
+  let header;
+  try {
+    header = document.querySelector("#app").shadowRoot.querySelector("#app-element").shadowRoot.querySelector("#mainHeader");
+  } catch (e) { }
+
+  while (!header) {
     await nextTick(1000);
-    importLinks = document.querySelectorAll("link[rel=import]");
-    gerritReady = importLinks && importLinks.length > 2;
+    try {
+      header = document.querySelector("#app").shadowRoot.querySelector("#app-element").shadowRoot.querySelector("#mainHeader");
+    } catch (e) { }
   }
   return true;
 }
