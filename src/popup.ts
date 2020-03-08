@@ -178,14 +178,25 @@ export class GdhApp extends LitElement {
           padding: 10px;
         }
         button {
+          font-family: Roboto, sans-serif;
+          font-size: .875rem;
+          font-weight: 500;
+          text-transform: uppercase;
+          user-select: none;
+          box-sizing: content-box;
+          border-radius: 4px;
+          border: 1px solid #333;
           padding: 5px;
+          cursor: pointer;
+          outline: none;
         }
-
+        button:hover {
+          background-color: #f4f0fa;
+        }
         header {
           display: flex;
           flex-direction: row-reverse;
         }
-
         textarea {
           min-width: 500px;
           min-height: 500px;
@@ -362,6 +373,14 @@ export class GdhRuleItem extends LitElement {
         textarea {
           flex: 1;
           min-width: 220px;
+          outline: none;
+          border: none;
+          border-bottom: 1px solid #ccc;
+        }
+        input[type="text"]:focus,
+        textarea:focus {
+          border-bottom: 1px solid #3c88fd;
+          background: #9dc3fd;
         }
         input[disabled],
         textarea[disabled] {
@@ -396,7 +415,7 @@ export class GdhDropdown extends LitElement {
 
   render() {
     return html`
-        <label for="trigger">
+        <label for="trigger" @click=${this.toggleVisible}>
           <div class="selected-value">${this.items[this.selectedIndex]}</div>
           <input
             .checked=${this.isVisible}
@@ -412,6 +431,7 @@ export class GdhDropdown extends LitElement {
             </li>
             `)}
           </ul>
+          <i></i>
         </label>
         `;
   }
@@ -422,6 +442,21 @@ export class GdhDropdown extends LitElement {
           position: relative;
           display: flex;
           flex-direction: column;
+        }
+        label {
+          background-color: #f1f1f1;
+          margin: 0 5px;
+        }
+        i {
+          position: absolute;
+          top: 10px;
+          right: 15px;
+          border: solid #555;
+          border-width: 0 3px 3px 0;
+          display: inline-block;
+          padding: 3px;
+          transform: rotate(45deg);
+          -webkit-transform: rotate(45deg);
         }
         .selected-value {
           padding: 8px 15px;
@@ -445,9 +480,11 @@ export class GdhDropdown extends LitElement {
           top: 0;
           width: 100%;
           height: 100%;
-        }
+          cursor: pointer;
+       }
         input:checked + ul {
           display: block;
+          box-shadow: 0 2px 1px -1px rgba(0, 0, 0, 0.2),0 1px 1px 0 rgba(0, 0, 0, 0.14),0 1px 3px 0 rgba(0,0,0,.12);
         }
         input:checked + ul li:hover {
           background: #ddd;
@@ -459,6 +496,10 @@ export class GdhDropdown extends LitElement {
         input:checked + ul li.active,
         input:checked + ul li.active:hover {
           background-color: #fff;
+        }
+        input:checked + ul + i {
+          transform: rotate(-135deg);
+          -webkit-transform: rotate(-135deg);
         }
         `;
   }
