@@ -1,3 +1,9 @@
+#### v0.0.5
+
+- set crossorigin to anonymous to help debug js error from plugin
+- improve the ui on popup
+- remove outdated rule of replacing gr-app-p2 with gr-app
+
 #### v0.0.4
 
 - A better way to wait for Gerrit when injecting html plugins
