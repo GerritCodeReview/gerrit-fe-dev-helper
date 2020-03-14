@@ -23,6 +23,22 @@ const onGerritReady = async () => {
   return true;
 }
 
+let numOfSnackBars = 0;
+function createSnackBar(message: string) {
+  const errorSnack = document.createElement('div');
+  errorSnack.style.position = 'absolute';
+  errorSnack.style.top = `${numOfSnackBars * 40}px`;
+  errorSnack.style.right = '10px';
+  errorSnack.style.backgroundColor = 'black';
+  errorSnack.style.color = 'white';
+  errorSnack.style.padding = '10px';
+  errorSnack.style.zIndex = '100';
+  errorSnack.innerHTML = message;
+  document.body.appendChild(errorSnack);
+  numOfSnackBars++;
+  return errorSnack;
+}
+
 // Apply injection rules to Gerrit sites if enabled
 chrome.runtime.sendMessage({ type: 'isEnabled' }, (isEnabled) => {
   if (!isEnabled) return;
@@ -60,24 +76,18 @@ chrome.runtime.sendMessage({ type: 'isEnabled' }, (isEnabled) => {
     });
 
     // test redirect rules
-    let idx = 0;
     rules.filter(rule => !isInjectRule(rule)).forEach(rule => {
-      if (rule.operator === Operator.REDIRECT && !rule.disabled) {
+      if (rule.operator === Operator.REDIRECT
+          && !rule.disabled
+          // only test for js/html
+          && /\.(js|html)+$/.test(rule.destination)
+        ) {
         fetch(rule.destination).then(res => {
           if (res.status < 200 || res.status >= 300) throw new Error("Resource not found");
         }).catch(e => {
-          const errorSnack = document.createElement('div');
-          errorSnack.style.position = 'absolute';
-          errorSnack.style.top = `${idx++ * 40}px`;
-          errorSnack.style.right = '10px';
-          errorSnack.style.backgroundColor = 'black';
-          errorSnack.style.color = 'white';
-          errorSnack.style.padding = '10px';
-          errorSnack.style.zIndex = '100';
-          errorSnack.innerHTML =
-            `You may have an invalid redirect rule from ${rule.target} to ${
-            rule.destination}`;
-          document.body.appendChild(errorSnack);
+          const errorSnack = createSnackBar(
+            `You may have an invalid redirect rule from ${rule.target} to ${rule.destination}`
+          );
 
           // in case body is unresolved
           document.body.style.display = "block";
@@ -85,7 +95,7 @@ chrome.runtime.sendMessage({ type: 'isEnabled' }, (isEnabled) => {
 
           setTimeout(() => {
             errorSnack.remove();
-            idx--;
+            numOfSnackBars--;
           }, 10 * 1000);
         });
       }

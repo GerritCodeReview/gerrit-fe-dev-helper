@@ -54,6 +54,8 @@ export enum Operator {
   INJECT_HTML_CODE = 'injectHtmlCode',
   INJECT_JS_PLUGIN = 'injectJSPlugin',
   INJECT_JS_CODE = 'injectJSCode',
+  REMOVE_RESPONSE_HEADER = 'rRespHeader',
+  ADD_REQUEST_HEADER = 'addReqHeader',
 }
 
 /**

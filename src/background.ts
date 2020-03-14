@@ -78,6 +78,17 @@ function onHeadersReceived(resp: chrome.webRequest.WebResponseHeadersDetails) {
     'name': 'Cache-Control',
     'value': 'max-age=0, no-cache, no-store, must-revalidate'
   });
+
+  const matches = rules.filter(isValidRule)
+                    .filter(
+                        rule => rule.operator === Operator.REMOVE_RESPONSE_HEADER
+                            && !rule.disabled
+                            && new RegExp(rule.target).test(resp.url));
+  matches.forEach(rule => {
+    const removedHeaders = rule.destination.split(",").map(name => name.toLowerCase());
+    resp.responseHeaders = resp.responseHeaders
+      .filter(h => !removedHeaders.includes(h.name.toLowerCase()));
+  });
   return {responseHeaders: resp.responseHeaders};
 }
 
@@ -129,6 +140,24 @@ function onBeforeSendHeaders(
       'value': 'max-age=0, no-cache, no-store, must-revalidate'
     });
   }
+
+  const matches = rules.filter(isValidRule)
+                    .filter(
+                        rule => rule.operator === Operator.ADD_REQUEST_HEADER
+                            && !rule.disabled
+                            && new RegExp(rule.target).test(details.url));
+  matches.forEach(rule => {
+    const addedHeaders = rule.destination.split(",")
+    addedHeaders.forEach(addedHeader => {
+      const partial = addedHeader.split("=");
+      if (partial.length === 2) {
+        details.requestHeaders.push({
+          'name': partial[0],
+          'value': partial[1]
+        });
+      }
+    });
+  });
 
   return {requestHeaders: details.requestHeaders};
 }

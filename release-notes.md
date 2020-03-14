@@ -1,3 +1,11 @@
+#### v0.0.6
+
+- Add two new operators:
+  - `addReqHeader` to add arbitrary header when you send a request
+  - `rRespHeader` to remove arbitrary header on any response
+- Modify default rules to show # of js errors in the helper tip
+- Add a new default rule to send x-test-origin with gerrit-fe-dev-helper on all requests when enabled
+
 #### v0.0.5
 
 - set crossorigin to anonymous to help debug js error from plugin

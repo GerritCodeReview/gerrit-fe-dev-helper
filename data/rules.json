@@ -31,8 +31,14 @@
   },
   {
     "disabled": false,
+    "target": ".*",
+    "operator": "addReqHeader",
+    "destination": "X-TEST-ORIGIN=gerrit-fe-dev-helper"
+  },
+  {
+    "disabled": false,
     "target": "",
-    "operator": "injectHtmlCode",
-    "destination": "<span style=\"color: white;font-weight:bold;padding:10px;z-index:10000;display:block;position:fixed;bottom:0;right:0;background-color:red;\">Gerrit dev helper is enabled</span>"
+    "operator": "injectJSCode",
+    "destination": "let helperTip = document.createElement('span'); helperTip.innerHTML = `Gerrit dev helper is enabled`; helperTip.style = 'color: white;font-weight:bold;padding:10px;z-index:10000;display:block;position:fixed;bottom:0;right:0;background-color:red;'; let _errorLog = console.error; let numOfErrors = 0; console.error = (...args) => { _errorLog.call(console, ...args); numOfErrors++; helperTip.innerHTML = `Gerrit dev helper is enabled (${numOfErrors} js errors)`; }; document.body.appendChild(helperTip);"
   }
 ]

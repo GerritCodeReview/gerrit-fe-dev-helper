@@ -280,6 +280,8 @@ export class GdhRuleItem extends LitElement {
     Operator.INJECT_HTML_CODE,
     Operator.INJECT_JS_PLUGIN,
     Operator.INJECT_JS_CODE,
+    Operator.ADD_REQUEST_HEADER,
+    Operator.REMOVE_RESPONSE_HEADER,
   ];
 
   handleInputOnTarget(e: Event) {
