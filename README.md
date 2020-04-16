@@ -18,6 +18,7 @@ See in [release notes](./release-notes.md).
 ### BUILD
 
 ```
+npm install
 npm run build
 ```
 
