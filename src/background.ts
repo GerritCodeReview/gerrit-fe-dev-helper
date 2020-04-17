@@ -89,6 +89,23 @@ function onHeadersReceived(resp: chrome.webRequest.WebResponseHeadersDetails) {
     resp.responseHeaders = resp.responseHeaders
       .filter(h => !removedHeaders.includes(h.name.toLowerCase()));
   });
+  const addMatches = rules.filter(isValidRule)
+                  .filter(
+                      rule => rule.operator === Operator.ADD_RESPONSE_HEADER
+                          && !rule.disabled
+                          && new RegExp(rule.target).test(resp.url));
+  addMatches.forEach(rule => {
+    const addedHeaders = rule.destination.split(",")
+    addedHeaders.forEach(addedHeader => {
+      const partial = addedHeader.split("=");
+      if (partial.length === 2) {
+        resp.responseHeaders.push({
+          'name': partial[0],
+          'value': partial[1]
+        });
+      }
+    });
+  });
   return {responseHeaders: resp.responseHeaders};
 }
 
