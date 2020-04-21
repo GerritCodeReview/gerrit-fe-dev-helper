@@ -114,22 +114,28 @@ function onBeforeRequest(details: chrome.webRequest.WebRequestBodyDetails) {
     return {cancel: false};
   }
 
-  const match = rules.filter(isValidRule)
-                    .find(
+  const matches = rules.filter(isValidRule)
+                    .filter(
                         rule => !isInjectRule(rule) && !rule.disabled &&
                             new RegExp(rule.target).test(details.url));
-  if (match) {
-    if (match.operator === Operator.BLOCK) {
-      return {cancel: true};
-    }
 
-    if (match.operator === Operator.REDIRECT) {
-      return {
-        redirectUrl:
-            details.url.replace(new RegExp(match.target), match.destination),
-      };
-    }
+  const blockMatch = matches.find(rule => rule.operator === Operator.BLOCK);
+  const redirectMatch = matches.find(rule => rule.operator === Operator.REDIRECT);
+
+  // block match takes highest priority
+  if (blockMatch) {
+    return {cancel: true};
   }
+
+  // then redirect
+  if (redirectMatch) {
+    return {
+        redirectUrl:
+            details.url.replace(new RegExp(redirectMatch.target), redirectMatch.destination),
+      };
+  }
+
+  // otherwise, don't do anything
   return {cancel: false};
 }
 

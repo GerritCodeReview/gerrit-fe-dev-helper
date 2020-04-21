@@ -1,3 +1,14 @@
+#### v0.0.7
+
+- Fix the issue when multiple rule matches one url for onBeforeRequest
+  - Block will always take the highest priority
+  - Then Redirect
+  - Ignore the rest
+- Add a new operator as `injectJsModule`, with plugins moving to polymer 3, certain plugins will be written in modules, and to inject moduled js plugins, use this rule
+  - This will basically add a `type="module"` to the script tag when load the script so we can use `import` inside
+  - With `type="module"`, `document.currentScript` will become `null` so we won't be able to infer the plugin url, to workaround this, make sure you call `Gerrit.install` with the third parameter: `Gerrit.install(() => {}, undefined, 'the_url')` so Gerrit can treat it as a legit plugin
+  - Keep using `injectJsPlugin` if its a single bundled js file
+
 #### v0.0.6
 
 - Add two new operators:
