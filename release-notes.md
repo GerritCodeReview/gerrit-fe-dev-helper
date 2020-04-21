@@ -1,3 +1,7 @@
+#### v0.0.8
+
+- Add addRespHeader operator, thanks to Edward <ehmaldonado@google.com>
+
 #### v0.0.7
 
 - Fix the issue when multiple rule matches one url for onBeforeRequest

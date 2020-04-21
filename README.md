@@ -47,8 +47,29 @@ The extension supports six different type of rules:
 4. injectJsCode: inject any js code to the page
 5. injectJsPlugin: inject a js plugin(url) to the site
 6. injectHtmlPlugin: inject a html plugin(url) to the site
+7. injectJsModule: inject a js module file to the site (type="module" will be added when load script)
+8. addReqHeader: to add arbitrary header when you send a request
+9. addRespHeader: to add arbitrary header when you receive a request
+10. rRespHeader: to remove arbitrary header on any response
 
 The two options of injecting any plugins meant to help you develop your plugins for your gerrit sites.
+
+#### How to use dev helper with html plugins
+
+Use `injectHtmlPlugin` rule or use `redirect` rule if its an existing html plugin.
+
+#### How to use dev helper with js plugins
+
+For single-file js plugins, use `injectJsPlugin` rule or use `redirect` if its an exising js plugin.
+
+For multi-file modularized js plugins (you have import / export in source code), you have two options:
+
+1. compile them and then treat it as single-file js plugin
+2. or if you want to load source code as it is
+  - use `injectJsModule`, this will load the js with `type="module"`, and due to restriction of `type="module"`, Gerrit won't be able to recognize the plugin without a proper url set when calling `Gerrit.install`, so you also need to tweak your code to call `Gerrit.install(callback, undefined, 'http://localhost:8081/plugins_/checks/gr-checks/gr-checks.js')` to let Gerrit treat it as a legit plugin
+  - or you can create a temporary html plugin which loads the `http://localhost:8081/plugins_/checks/gr-checks/gr-checks.js` with `type="module"`, and then treat it as a html plugin
+
+Either way, you need to block the existing plugin if its already on the page.
 
 ### Contact
 
