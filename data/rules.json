@@ -21,7 +21,7 @@
     "disabled": false,
     "target": "(.*)cdn.googlesource.com/polygerrit_ui/[0-9.]+/elements/.*",
     "operator": "redirect",
-    "destination": "http://localhost:8081/elements/gr-app.html"
+    "destination": "http://localhost:8081/elements/gr-app.js"
   },
   {
     "disabled": false,
