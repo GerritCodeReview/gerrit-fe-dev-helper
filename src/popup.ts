@@ -281,6 +281,7 @@ export class GdhRuleItem extends LitElement {
     Operator.INJECT_JS_PLUGIN,
     Operator.INJECT_JS_MODULE_PLUGIN,
     Operator.INJECT_JS_CODE,
+    Operator.INJECT_EXP,
     Operator.ADD_REQUEST_HEADER,
     Operator.ADD_RESPONSE_HEADER,
     Operator.REMOVE_RESPONSE_HEADER,

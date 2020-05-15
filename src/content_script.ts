@@ -1,4 +1,10 @@
-import { isInjectRule, Operator, Rule } from './utils';
+import { isInjectRule, Operator, Rule, getUrlParameter } from './utils';
+
+declare global {
+  interface Window {
+    ENABLED_EXPERIMENGTS?: string[];
+  }
+}
 
 function nextTick(ts: number) {
   return new Promise(resolve => {
@@ -80,16 +86,24 @@ chrome.runtime.sendMessage({ type: 'isEnabled' }, (isEnabled) => {
         const link = document.createElement('script');
         link.innerHTML = rule.destination;
         document.head.appendChild(link);
+      } else if (rule.operator === Operator.INJECT_EXP) {
+        const exps = getUrlParameter('experiment');
+        const hasSeachString = !!window.location.search;
+        const injectedExpNotInExps = new Set(rule.destination.trim().split(',').filter(exp => !exps.includes(exp.trim())));
+        if (injectedExpNotInExps.size) {
+          const addedParams = [...injectedExpNotInExps].reduce((str, exp) => str += `experiment=${exp}&`, '');
+          window.location.href += hasSeachString ? `&${addedParams}` : `?${addedParams}`;
+        }
       }
     });
 
     // test redirect rules
     rules.filter(rule => !isInjectRule(rule)).forEach(rule => {
       if (rule.operator === Operator.REDIRECT
-          && !rule.disabled
-          // only test for js/html
-          && /\.(js|html)+$/.test(rule.destination)
-        ) {
+        && !rule.disabled
+        // only test for js/html
+        && /\.(js|html)+$/.test(rule.destination)
+      ) {
         fetch(rule.destination).then(res => {
           if (res.status < 200 || res.status >= 300) throw new Error("Resource not found");
         }).catch(e => {

@@ -1,6 +1,8 @@
-#### next release
+#### v0.0.8
 
-- Add addRespHeader operator, thanks to Edward <ehmaldonado@google.com>
+- **BREAKING CHNAGE**: Gerrit is moving to `gr-app.js` only, so `gr-app.html` will no longer exists, we have updated default rules to forward to `gr-app.js` as well, in case you are still using `gr-app.html`, please modify that redirect rule by changing `gr-app.js` to `gr-app.html`
+- Add `addRespHeader` operator, thanks to Edward <ehmaldonado@google.com>
+- Add `injectExp` operator, as gerrit now supports experiments, this is a quick way to force enabling certain experiments, experiments should be separated by `,`
 
 #### v0.0.7
 
