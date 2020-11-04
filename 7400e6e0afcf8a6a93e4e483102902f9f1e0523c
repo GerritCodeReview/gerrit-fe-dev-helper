@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "68bf6c32_48e944fb",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1119238
+      },
+      "writtenOn": "2020-11-04T08:43:55Z",
+      "side": 1,
+      "message": "263698: Update readme with more details | https://gerrit-review.googlesource.com/c/gerrit-fe-dev-helper/+/263698",
+      "revId": "7400e6e0afcf8a6a93e4e483102902f9f1e0523c",
+      "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153"
+    }
+  ]
+}
