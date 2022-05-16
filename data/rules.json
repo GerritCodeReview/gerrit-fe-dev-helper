@@ -1,6 +1,18 @@
 [
   {
     "disabled": false,
+    "target": ".*",
+    "operator": "addRespHeader",
+    "destination": "Access-Control-Allow-Origin=*|X-WEBKIT-CSP=*"
+  },
+  {
+    "disabled": false,
+    "target": ".*",
+    "operator": "addRespHeader",
+    "destination": "x-google-cache-control=max-age=0, no-cache, no-store, must-revalidate|Cache-Control=max-age=0, no-cache, no-store, must-revalidate"
+  },
+  {
+    "disabled": false,
     "target": ".*play.google.com.*",
     "operator": "block",
     "destination": ""

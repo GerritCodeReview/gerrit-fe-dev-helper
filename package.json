@@ -1,4 +1,5 @@
 {
+  "version": "0.0.9",
   "name": "gerrit-fe-dev-helper",
   "license": "MIT",
   "dependencies": {
@@ -13,7 +14,6 @@
     "webpack": "^4.41.2",
     "webpack-cli": "^3.3.10"
   },
-  "version": "0.0.1",
   "description": "Dev helper for gerrit fe development",
   "scripts": {
     "assets:html": "cp src/*.html dist",
