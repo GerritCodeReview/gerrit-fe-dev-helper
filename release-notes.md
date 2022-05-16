@@ -1,3 +1,9 @@
+#### v0.0.9
+
+- Move cors / cache override to rules, so user can disable it from the popup
+- Change header value separator from `,` to `|`, as `,` can be part of the value while `|` is unlikely
+- Fix `onGerritReady` to use tag name instead of id and max at 5s ;)
+
 #### v0.0.8
 
 - **BREAKING CHNAGE**: Gerrit is moving to `gr-app.js` only, so `gr-app.html` will no longer exists, we have updated default rules to forward to `gr-app.js` as well, in case you are still using `gr-app.html`, please modify that redirect rule by changing `gr-app.js` to `gr-app.html`

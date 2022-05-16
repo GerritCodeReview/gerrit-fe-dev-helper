@@ -53,32 +53,6 @@ function onHeadersReceived(resp: chrome.webRequest.WebResponseHeadersDetails) {
     return {responseHeaders: resp.responseHeaders};
   }
 
-  let len = resp.responseHeaders.length;
-  if (len > 0) {
-    while (--len) {
-      const header = resp.responseHeaders[len];
-      if (header.name.toUpperCase() === 'X-WEBKIT-CSP') {
-        header.value = '*';
-        break;
-      } else if (header.name.toLowerCase() === 'access-control-allow-origin') {
-        resp.responseHeaders[len].value = '*';
-        break;
-      } else if (
-          header.name.toLowerCase() === 'cache-control' ||
-          header.name.toLowerCase() === 'x-google-cache-control') {
-        header.value = 'max-age=0, no-cache, no-store, must-revalidate';
-      }
-    }
-  }
-
-  // add cors and cache anyway
-  resp.responseHeaders.push(
-      {'name': 'Access-Control-Allow-Origin', 'value': '*'});
-  resp.responseHeaders.push({
-    'name': 'Cache-Control',
-    'value': 'max-age=0, no-cache, no-store, must-revalidate'
-  });
-
   const matches = rules.filter(isValidRule)
                     .filter(
                         rule => rule.operator === Operator.REMOVE_RESPONSE_HEADER
@@ -95,7 +69,7 @@ function onHeadersReceived(resp: chrome.webRequest.WebResponseHeadersDetails) {
                           && !rule.disabled
                           && new RegExp(rule.target).test(resp.url));
   addMatches.forEach(rule => {
-    const addedHeaders = rule.destination.split(",")
+    const addedHeaders = rule.destination.split("|")
     addedHeaders.forEach(addedHeader => {
       const partial = addedHeader.split("=");
       if (partial.length === 2) {

@@ -14,16 +14,28 @@ function nextTick(ts: number) {
 
 // Since content-script can not access window.Gerrit,
 // here checks the readiness based on #mainHeader element
+// Wait at most 5s before considering it as loaded.
+const MAX_WAIT_TIME = 5000;
+const getHeaderEl = () => {
+  if (document.querySelector("#app")) {
+    return document.querySelector("#app").shadowRoot.querySelector("#app-element").shadowRoot.querySelector("#mainHeader");
+  } else {
+    return document.querySelector("gr-app").shadowRoot.querySelector("gr-app-element").shadowRoot.querySelector("gr-main-header");
+  }
+}
 const onGerritReady = async () => {
   let header;
   try {
-    header = document.querySelector("#app").shadowRoot.querySelector("#app-element").shadowRoot.querySelector("#mainHeader");
+    header = getHeaderEl();
   } catch (e) { }
 
+  let waitTime = 0;
   while (!header) {
+    if (waitTime > MAX_WAIT_TIME) break;
+    waitTime += 1000;
     await nextTick(1000);
     try {
-      header = document.querySelector("#app").shadowRoot.querySelector("#app-element").shadowRoot.querySelector("#mainHeader");
+      header = getHeaderEl();
     } catch (e) { }
   }
   return true;
