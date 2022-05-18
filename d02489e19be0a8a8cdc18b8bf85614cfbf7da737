@@ -69,6 +69,24 @@
       "parentUuid": "96beaf84_bd37dc88",
       "revId": "d02489e19be0a8a8cdc18b8bf85614cfbf7da737",
       "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6ff73c56_881d2827",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1086906
+      },
+      "writtenOn": "2022-05-18T07:32:45Z",
+      "side": 1,
+      "message": "seems I don\u0027t have the permission to submit this change, so feel free to submit, I will do the release today ;) Thanks!",
+      "parentUuid": "071e3e30_2813d4de",
+      "revId": "d02489e19be0a8a8cdc18b8bf85614cfbf7da737",
+      "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153"
     }
   ]
 }
