@@ -16,6 +16,23 @@
       "message": "I was contacted by some plugin developers and this fix is based on the collected feedback, I have personally tested the change locally, but maybe someone from the team can also verify it with your latest use cases so I don\u0027t break anything ;) and I will do the release once this is merged ;) thanks!",
       "revId": "d02489e19be0a8a8cdc18b8bf85614cfbf7da737",
       "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b40887e3_c7008b74",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1013302
+      },
+      "writtenOn": "2022-05-18T07:28:33Z",
+      "side": 1,
+      "message": "Nice, thank you so much, Tao!",
+      "revId": "d02489e19be0a8a8cdc18b8bf85614cfbf7da737",
+      "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153"
     }
   ]
 }
