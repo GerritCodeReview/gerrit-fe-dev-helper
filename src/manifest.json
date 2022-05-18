@@ -26,14 +26,11 @@
   ],
   "content_security_policy": "default-src 'none'; script-src 'self'; style-src 'unsafe-inline'; connect-src https://*",
   "permissions": [
-    "debugger",
     "activeTab",
     "<all_urls>",
-    "notifications",
     "storage",
     "tabs",
     "webRequest",
-    "webRequestBlocking",
-    "declarativeContent"
+    "webRequestBlocking"
   ]
 }
