@@ -16,6 +16,23 @@
       "message": "This is needed to publish the extension ;)",
       "revId": "cb7a8ed5d00d46a7fa5e8f32f45619fd4dd822c0",
       "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1769ee84_e082f937",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1086906
+      },
+      "writtenOn": "2022-05-19T08:00:19Z",
+      "side": 1,
+      "message": "Thanks Ben, can we submit this now ? I have published the latest version ;)",
+      "revId": "cb7a8ed5d00d46a7fa5e8f32f45619fd4dd822c0",
+      "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153"
     }
   ]
 }
