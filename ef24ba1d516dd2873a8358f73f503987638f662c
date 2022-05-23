@@ -16,6 +16,24 @@
       "message": "I don\u0027t know how to push a new version of this to the chrome store.",
       "revId": "ef24ba1d516dd2873a8358f73f503987638f662c",
       "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6f8f4678_7ff42402",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1013302
+      },
+      "writtenOn": "2022-05-23T10:02:18Z",
+      "side": 1,
+      "message": "Me neither. :-/",
+      "parentUuid": "d1b56a00_dbf1bf1e",
+      "revId": "ef24ba1d516dd2873a8358f73f503987638f662c",
+      "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153"
     }
   ]
 }
