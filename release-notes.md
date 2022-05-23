@@ -1,3 +1,6 @@
+#### v0.0.10
+- Bumped lit version to 2.2.3
+
 #### v0.0.9
 
 - Move cors / cache override to rules, so user can disable it from the popup
