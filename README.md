@@ -28,10 +28,15 @@ After you installed and enabled the extension, you should see something similar 
 
 ### How to use
 
-1. Start the go server to host all assets locally
+1. For Gerrit core development, start the local gerrit dev server to host app code locally
 ```sh
-./polygerrit-ui/run-server.sh
+yarn start
 ```
+Or if you are developing a plugin, serve your plugin locally via any means. Ex:
+```sh
+npx http-server -c-1
+```
+
 2. Go to any gerrit sites, enable the extension by click the icon
 3. You should see this red notice show up in the bottom right of the page (`Gerrit dev helper is enabled`),
 and now your gerrit assets should be loaded from local server
