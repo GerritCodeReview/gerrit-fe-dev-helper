@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "eabf0387_5c45c28f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1010788
+      },
+      "writtenOn": "2022-11-23T16:54:43Z",
+      "side": 1,
+      "message": "I was looking at injecting a local plugin I am developing and found that extension. That has let me polish the plugin against real world production changes which has been a huge boost. Thank you Tao!\n\nI could not find out how to render the Markdown the same way it is rendered at https://gerrit.googlesource.com/gerrit-fe-dev-helper/+/master/README.md :-(   Maybe there is some Bazel rule to do that?",
+      "revId": "c98045ce7a9840db63996d1dea6482b9fdc9d51e",
+      "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153"
+    }
+  ]
+}
