@@ -58,6 +58,30 @@
       "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "dd59a3e9_be84886e",
+        "filename": "README.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1010788
+      },
+      "writtenOn": "2022-11-24T19:44:34Z",
+      "side": 1,
+      "message": "I should definitely add a spellchecker to vi :)  Thank you Chris!",
+      "parentUuid": "963c4764_1cb05b4a",
+      "range": {
+        "startLine": 12,
+        "startChar": 71,
+        "endLine": 12,
+        "endChar": 76
+      },
+      "revId": "c98045ce7a9840db63996d1dea6482b9fdc9d51e",
+      "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "c8f91806_9de552ae",
@@ -71,6 +95,30 @@
       "writtenOn": "2022-11-24T12:11:41Z",
       "side": 1,
       "message": "clicking",
+      "range": {
+        "startLine": 48,
+        "startChar": 51,
+        "endLine": 48,
+        "endChar": 56
+      },
+      "revId": "c98045ce7a9840db63996d1dea6482b9fdc9d51e",
+      "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3098f929_8d86e04e",
+        "filename": "README.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1010788
+      },
+      "writtenOn": "2022-11-24T19:44:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c8f91806_9de552ae",
       "range": {
         "startLine": 48,
         "startChar": 51,
@@ -112,6 +160,24 @@
       "side": 1,
       "message": "Yeah\nCan you edit in this change @hashar@free.fr?",
       "parentUuid": "4a4cd9a5_affdb7a0",
+      "revId": "c98045ce7a9840db63996d1dea6482b9fdc9d51e",
+      "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3f77aa7d_7e2520e0",
+        "filename": "README.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 1010788
+      },
+      "writtenOn": "2022-11-24T19:44:34Z",
+      "side": 1,
+      "message": "Done and I have amended the commit message with:\n\n\u003e Changed the point of contact from Tao Zhou to Dhruv Srivastava.",
+      "parentUuid": "083b7b88_df755171",
       "revId": "c98045ce7a9840db63996d1dea6482b9fdc9d51e",
       "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153"
     }
