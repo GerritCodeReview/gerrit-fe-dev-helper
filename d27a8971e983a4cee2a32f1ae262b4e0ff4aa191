@@ -1,5 +1,23 @@
 {
-  "comments": [],
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "88ea5ecd_5b7244e1",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1010788
+      },
+      "writtenOn": "2023-03-21T20:12:20Z",
+      "side": 1,
+      "message": "The chrome extension on https://chrome.google.com/webstore/detail/gerrit-fe-dev-helper/jimgomcnodkialnpmienbomamgomglkd does show the updated release notes.  This change got merged on May 24th 2022 but the page shows metadata from the day before:\n\n Last update: May 23 2022\n \nAnd the page list the extension version as 0.0.9 when it should be 0.0.10 :)",
+      "revId": "d27a8971e983a4cee2a32f1ae262b4e0ff4aa191",
+      "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153"
+    }
+  ],
   "submitRequirementResults": [
     {
       "submitRequirement": {
