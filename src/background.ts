@@ -52,7 +52,6 @@ function onHeadersReceived(resp: chrome.webRequest.WebResponseHeadersDetails) {
   if (!TabStates.has(resp.tabId)) {
     return {responseHeaders: resp.responseHeaders};
   }
-
   const matches = rules.filter(isValidRule)
                     .filter(
                         rule => rule.operator === Operator.REMOVE_RESPONSE_HEADER
@@ -175,7 +174,7 @@ function setUpListeners() {
 
   // blocking or redirecting
   chrome.webRequest.onBeforeRequest.addListener(
-      onBeforeRequest, {urls: ['<all_urls>']}, ['blocking']);
+      onBeforeRequest, {urls: ['<all_urls>']}, ['blocking', 'extraHeaders']);
 
   // disabling cache
   chrome.webRequest.onBeforeSendHeaders.addListener(
