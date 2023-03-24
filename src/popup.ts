@@ -1,4 +1,5 @@
-import {css, customElement, html, LitElement, property } from 'lit-element';
+import {LitElement, html, css} from 'lit';
+import {customElement, property} from 'lit/decorators.js';
 
 import {getDefaultRules, isInjectRule, Operator, Rule} from './utils';
 
@@ -9,6 +10,24 @@ const EMPTY_RULE = {
   destination: '',
   isNew: true,
 };
+
+const iconStyles = css`
+  .icon {
+    font-family: 'Material Symbols Outlined';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 20px;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    -webkit-font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
+  }
+`;
 
 /**
  * GdhApp component.
@@ -138,7 +157,7 @@ export class GdhApp extends LitElement {
     return html`
         <p ?hidden=${!this.announcementText}>${this.announcementText}</p>
         <header>
-          <button @click=${this.disableHelper}>Disable</button>
+          <button class="primary" @click=${this.disableHelper}>Disable</button>
         </header>
         <div ?hidden=${this.isImport}>
           <gdh-rule-set
@@ -148,7 +167,7 @@ export class GdhApp extends LitElement {
             .rules=${this.rules}>
           </gdh-rule-set>
           <div class="buttons">
-            <button @click=${this.saveRules}>Save</button>
+            <button class="primary" @click=${this.saveRules}>Save</button>
             <button @click=${this.addNewRule}>Add</button>
             <button @click=${this.resetRules}>Reset</button>
             <button @click=${this.startImport}>Import</button>
@@ -173,25 +192,38 @@ export class GdhApp extends LitElement {
 
   static get styles() {
     return css`
+        :host {
+          display: block;
+          padding: 10px;
+        }
         p {
           background: yellow;
           padding: 10px;
         }
         button {
+          color: #1565c0;
+          background: transparent;
           font-family: Roboto, sans-serif;
-          font-size: .875rem;
-          font-weight: 500;
+          font-size: 14px;
+          font-weight: 400;
           text-transform: uppercase;
           user-select: none;
           box-sizing: content-box;
           border-radius: 4px;
-          border: 1px solid #333;
-          padding: 5px;
+          border: none;
+          padding: 4px 8px;
           cursor: pointer;
           outline: none;
         }
         button:hover {
           background-color: #f4f0fa;
+        }
+        button.primary {
+          color: white;
+          background-color: #1565c0;
+        }
+        button.primary:hover {
+          background-color: #2575d0;
         }
         header {
           display: flex;
@@ -215,11 +247,12 @@ export class GdhRuleSet extends LitElement {
   render() {
     return html`
         <ul>
-          <li>
+          <li class="header">
             <span></span>
             <span>Target</span>
             <span>Operator</span>
             <span>Destination</span>
+            <span></span>
           </li>
           ${
         this.rules.map(
@@ -232,35 +265,41 @@ export class GdhRuleSet extends LitElement {
   static get styles() {
     return css`
         :host {
+          display: block;
           position: relative;
-          display: flex;
-          flex-direction: row;
+          padding: 16px 0;
         }
         ul {
           list-style: none;
           margin: 0;
-          padding: 10px;
-          width: 100%;
+          padding: 0;
         }
         ul li {
-          display: flex;
           margin: 5px 0;
-          width: 100%;
         }
-        li span {
+        ul li.header {
+          display: flex;
+        }
+        li.header span {
           text-align: center;
+          font-weight: bold;
         }
-        li span:nth-child(1) {
-          flex-basis: 30px;
+        li.header span:nth-child(1) {
+          flex-basis: 20px;
         }
-        li span:nth-child(2) {
+        li.header span:nth-child(2) {
+          flex: 1;
           flex-basis: 220px;
         }
-        li span:nth-child(3) {
-          flex-basis: 130px;
+        li.header span:nth-child(3) {
+          flex-basis: 140px;
         }
-        li span:nth-child(4) {
+        li.header span:nth-child(4) {
           flex: 1;
+          flex-basis: 220px;
+        }
+        li.header span:nth-child(5) {
+          flex-basis: 20px;
         }
         `;
   }
@@ -330,11 +369,13 @@ export class GdhRuleItem extends LitElement {
 
   render() {
     return html`
-        <input
-          type="checkbox"
-          .checked=${!this.rule.disabled}
-          @dblclick=${this.enableOnlyMe}
-          @click=${this.toggleDisable} />
+        <div class="checkboxContainer">
+          <input
+            type="checkbox"
+            .checked=${!this.rule.disabled}
+            @dblclick=${this.enableOnlyMe}
+            @click=${this.toggleDisable} />
+        </div>  
         <input
           class="target"
           .disabled=${isInjectRule(this.rule)}
@@ -352,27 +393,55 @@ export class GdhRuleItem extends LitElement {
           @input=${this.handleInputOnDestination}
           .disabled=${this.rule.operator === Operator.BLOCK}>
         </textarea>
-        <span class="deleteBtn" @click=${
-        this.onRuleDeletion.bind(this, this.rule)}>x</span>
+        <div class="deleteContainer">
+          <span class="icon deleteButton"
+                @click=${this.onRuleDeletion.bind(this, this.rule)}>
+            delete
+          </span>
+        </div>  
         `;
   }
 
   static get styles() {
-    return css`
+    return [
+      iconStyles,
+      css`
         :host {
           position: relative;
           display: flex;
           flex-direction: row;
         }
-        .deleteBtn {
-          padding: 5px;
-          font-size: 18px;
-          cursor: pointer;
+        .deleteContainer {
           flex-basis: 20px;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          margin-left: 8px;
+        }
+        .deleteButton {
+          cursor: pointer;
+        }
+        .deleteButton:hover {
+          background: #eee;
+        }
+        .checkboxContainer {
+          flex-basis: 16px;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          margin-right: 8px;
         }
         input[type="checkbox"] {
-          margin: 10px;
-          flex-basis: 20px;
+          width: 16px;
+          height: 16px;
+        }
+        input[type="text"] {
+          font-family: Roboto, sans-serif;
+          font-size: 13px;
+        }
+        textarea {
+          font-family: 'Roboto Mono', monospace;
+          font-size: 12px;
         }
         input[type="text"],
         textarea {
@@ -385,13 +454,14 @@ export class GdhRuleItem extends LitElement {
         input[type="text"]:focus,
         textarea:focus {
           border-bottom: 1px solid #3c88fd;
-          background: #9dc3fd;
+          background: #e8f0fe;
         }
         input[disabled],
         textarea[disabled] {
-          background: #ddd;
+          background: #e8eaed;
         }
-        `;
+        `
+    ];
   }
 }
 
@@ -436,13 +506,15 @@ export class GdhDropdown extends LitElement {
             </li>
             `)}
           </ul>
-          <i></i>
+          <span class="icon">expand_more</span>
         </label>
         `;
   }
 
   static get styles() {
-    return css`
+    return [
+      iconStyles,
+      css`
         :host {
           position: relative;
           display: flex;
@@ -451,20 +523,16 @@ export class GdhDropdown extends LitElement {
         label {
           background-color: #f1f1f1;
           margin: 0 5px;
+          line-height: 16px;
         }
-        i {
+        span.icon {
           position: absolute;
-          top: 10px;
-          right: 15px;
-          border: solid #555;
-          border-width: 0 3px 3px 0;
-          display: inline-block;
-          padding: 3px;
-          transform: rotate(45deg);
-          -webkit-transform: rotate(45deg);
+          top: 6px;
+          right: 6px;
+          pointer-events: none;
         }
         .selected-value {
-          padding: 8px 15px;
+          padding: 8px 16px 8px 8px;
           min-width: 100px;
         }
         ul {
@@ -506,6 +574,7 @@ export class GdhDropdown extends LitElement {
           transform: rotate(-135deg);
           -webkit-transform: rotate(-135deg);
         }
-        `;
+      `
+    ];
   }
 }

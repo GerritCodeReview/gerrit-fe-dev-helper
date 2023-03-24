@@ -24,7 +24,7 @@
       ]
     }
   ],
-  "content_security_policy": "default-src 'none'; script-src 'self'; style-src 'unsafe-inline'; connect-src https://*",
+  "content_security_policy": "script-src 'self'; object-src 'self';",
   "permissions": [
     "activeTab",
     "<all_urls>",
