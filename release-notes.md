@@ -1,3 +1,9 @@
+#### v0.0.11
+
+- Fix CORS preflight interception
+- Update npm deps
+- Make the extension look a bit nicer
+
 #### v0.0.10
 
 - Bumped lit version to 2.2.3
