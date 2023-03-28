@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "582bce6d_6af711a4",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1010788
+      },
+      "writtenOn": "2023-03-28T09:37:09Z",
+      "side": 1,
+      "message": "There is something a bit strange on the Chrome store page at https://chrome.google.com/webstore/detail/gerrit-fe-dev-helper/jimgomcnodkialnpmienbomamgomglkd\n\nThe metadata shows:\n\nVersion 0.0.9\nUpdated March 27, 2023\n\nBut the Overview lists the release notes for v0.0.11\n\n\nThe same thing happened with the release of 0.0.10 which I have commented on https://gerrit-review.googlesource.com/c/gerrit-fe-dev-helper/+/337714\n\n\nI supposed this change has already been released to the Chrome store but the metadata have to be manually edited?",
+      "revId": "a7de1635b8524ce9ff0c7655380d0af074e90289",
+      "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153"
+    }
+  ]
+}
