@@ -83,6 +83,32 @@ For multi-file modularized js plugins (you have import / export in source code),
 
 Either way, you need to `block` the existing plugin if its already on the page.
 
+### Testing a new version
+
+* Execute `npm run build`.
+* Go to chrome://extensions/.
+* Turn on `Developer Mode`.
+* Click `Load Unpacked`.
+* Choose the `dist` directory.
+
+As a Google developer you will have to add a `key` to the `manifest.json` in the `dist/` directory
+as documented here: http://go/extension-identification#i%E2%80%99m-developing-a-chrome-extension-on-my-computer
+
+### Publish a new version to the Chrome Webstore
+
+This section is for members of Google's developer team only.
+
+* Make sure that you are a member of the group g/gerrit-fe-dev-helper.
+* Go to https://chrome.google.com/webstore/devconsole/d2ee4af0-3e6f-489c-97c9-fa14d84e2ffa/jimgomcnodkialnpmienbomamgomglkd/edit/package
+* Make sure that you have updated the version in `manifest.json` and `package.json`.
+* Produce a zip bundle of the extension by executing `npm run build`.
+* Upload the bundle using the `Upload dogfood version` button.
+* Submit the dogfood draft for review.
+* Wait ~24h for the dogfood draft to be published.
+* Upload the bundle using the `Upload new package` button.
+* Submit the main draft for review.
+* Wait ~24h for the main draft to be published.
+
 ### Contact
 
 Please don't hesitate to contact dhruvsri@google.com for support on this extension.
