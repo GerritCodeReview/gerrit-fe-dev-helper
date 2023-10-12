@@ -51,6 +51,24 @@
       "message": "Can you please write why?",
       "revId": "bc6f7893fd13e900b770829a1bb4bfd8e5e0bce3",
       "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6e5e5046_5b77344a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1119195
+      },
+      "writtenOn": "2023-10-12T12:43:43Z",
+      "side": 1,
+      "message": "+1, saying \"gerrit hosts\" in the commit is not correct. It is a restriction to Google\u0027s hosts.",
+      "parentUuid": "6fe35f6e_c85bdc26",
+      "revId": "bc6f7893fd13e900b770829a1bb4bfd8e5e0bce3",
+      "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153"
     }
   ]
 }
