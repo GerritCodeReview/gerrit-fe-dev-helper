@@ -1,3 +1,7 @@
+#### v0.0.13
+
+- Fix `content_scripts.matches` patterns
+
 #### v0.0.12
 
 - Restrict the extension to only work for Google hosted Gerrit
