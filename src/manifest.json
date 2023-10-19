@@ -17,9 +17,9 @@
     {
       "run_at": "document_end",
       "matches": [
-        "https://*-review.git.corp.google.com",
-        "https://*-review.staging-git.corp.google.com",
-        "https://*-review.googlesource.com"
+        "https://*.git.corp.google.com/",
+        "https://*.staging-git.corp.google.com/",
+        "https://*.googlesource.com/"
       ],
       "js": [
         "content_script.js"
