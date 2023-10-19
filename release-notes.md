@@ -1,3 +1,8 @@
+#### v0.0.12
+
+- Restrict the extension to only work for Google hosted Gerrit
+- Add documentation about testing and publishing the extension
+
 #### v0.0.11
 
 - Fix CORS preflight interception
