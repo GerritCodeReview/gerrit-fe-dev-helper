@@ -19,7 +19,8 @@
       "matches": [
         "https://*.git.corp.google.com/*",
         "https://*.staging-git.corp.google.com/*",
-        "https://*.googlesource.com/*"
+        "https://*.googlesource.com/*",
+		"https://gerrit.wikimedia.org/r/*"
       ],
       "js": [
         "content_script.js"
