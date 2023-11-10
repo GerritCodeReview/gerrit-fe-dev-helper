@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "465e5581_074136d3",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1010788
+      },
+      "writtenOn": "2023-11-10T16:56:12Z",
+      "side": 1,
+      "message": "I have tried it locally by building the extension with `npm run build` and loading it unpacked from the `./dist` directory. I then went to https://gerrit.wikimedia.org/r/ , enabled the extension and made it inject a local plugin and it got injected :)",
+      "revId": "44f4712cf603220dd5febc52c0fd7d8060b211dd",
+      "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153"
+    }
+  ]
+}
