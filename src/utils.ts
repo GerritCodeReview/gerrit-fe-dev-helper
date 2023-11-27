@@ -95,3 +95,15 @@ export function getUrlParameter(param: string) {
   }
   return res;
 }
+
+// Note that this does not work from a content script. It does not have access
+// to the `chrome.tabs` API.
+export async function getActiveTab(): Promise<chrome.tabs.Tab | undefined> {
+  const activeTabs = await chrome.tabs.query({
+    active: true,
+    currentWindow: true,
+  });
+  const activeTab = activeTabs[0];
+  if (!activeTab?.id || !activeTab?.url) return undefined;
+  return activeTab;
+}
