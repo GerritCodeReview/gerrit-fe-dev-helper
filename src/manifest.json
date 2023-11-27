@@ -8,10 +8,8 @@
     "default_title": "Gerrit FE Dev Helper"
   },
   "background": {
-    "scripts": [
-      "background.js"
-    ],
-    "persistent": true
+    "service_worker": "service_worker.js",
+    "type": "module"
   },
   "content_scripts": [
     {

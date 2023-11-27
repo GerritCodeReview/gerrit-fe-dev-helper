@@ -7,7 +7,7 @@ module.exports = {
     mode: MODE,
     entry: {
         popup: path.join(__dirname, srcDir + 'popup.ts'),
-        background: path.join(__dirname, srcDir + 'background.ts'),
+        service_worker: path.join(__dirname, srcDir + 'service_worker.ts'),
         content_script: path.join(__dirname, srcDir + 'content_script.ts')
     },
     optimization:{
