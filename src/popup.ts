@@ -2,6 +2,7 @@ import {LitElement, html, css} from 'lit';
 import {customElement, property} from 'lit/decorators.js';
 
 import {getDefaultRules, isInjectRule, Operator, Rule} from './utils';
+import {Storage} from './storage';
 
 const EMPTY_RULE = {
   disabled: false,
@@ -41,6 +42,8 @@ export class GdhApp extends LitElement {
   @property() rulesStr = '';
   @property() importError = '';
 
+  private readonly storage = new Storage();
+
   constructor() {
     super();
     this.loadRules();
@@ -56,23 +59,14 @@ export class GdhApp extends LitElement {
     }
   }
 
-  private loadRules() {
-    chrome.storage.sync.get(['rules', 'enabled'], result => {
-      if (!result['rules']) return;
-      this.rules = (result['rules'] as Rule[]).map(
-        rule => ((rule.isNew = false), rule)
-      );
-      this.rulesStr = JSON.stringify(this.rules, null, 2);
-    });
+  private async loadRules() {
+    const rules: Rule[] = await this.storage.getRulesAsync();
+    this.rules = rules.map(rule => ({...rule, isNew: false}));
+    this.rulesStr = JSON.stringify(this.rules, null, 2);
   }
 
-  saveRules() {
-    chrome.storage.sync.set({rules: this.rules.slice()});
-    chrome.runtime.sendMessage({
-      type: 'updateRules',
-      rules: this.rules.slice(),
-    });
-
+  private async saveRules() {
+    await this.storage.setRules([...this.rules]);
     this.refresh();
   }
 
@@ -127,11 +121,11 @@ export class GdhApp extends LitElement {
     this.isImport = true;
   }
 
-  confirmImport() {
+  async confirmImport() {
     try {
       const rules = JSON.parse(this.rulesStr);
       this.rules = rules;
-      this.saveRules();
+      await this.saveRules();
       this.isImport = false;
     } catch (e) {
       this.importError = e.message;
