@@ -1,14 +1,20 @@
 import {LitElement, html, css} from 'lit';
 import {customElement, property} from 'lit/decorators.js';
 
-import {getDefaultRules, isInjectRule, Operator, Rule} from './utils';
+import {
+  getDefaultRules,
+  isInjectRule,
+  Operator,
+  Rule,
+  getActiveTab,
+} from './utils';
+import {StorageUtil} from './storage';
 
 const EMPTY_RULE = {
   disabled: false,
   target: '',
   operator: Operator.BLOCK,
   destination: '',
-  isNew: true,
 };
 
 const iconStyles = css`
@@ -41,6 +47,8 @@ export class GdhApp extends LitElement {
   @property() rulesStr = '';
   @property() importError = '';
 
+  private readonly storage = new StorageUtil();
+
   constructor() {
     super();
     this.loadRules();
@@ -56,23 +64,14 @@ export class GdhApp extends LitElement {
     }
   }
 
-  private loadRules() {
-    chrome.storage.sync.get(['rules', 'enabled'], result => {
-      if (!result['rules']) return;
-      this.rules = (result['rules'] as Rule[]).map(
-        rule => ((rule.isNew = false), rule)
-      );
-      this.rulesStr = JSON.stringify(this.rules, null, 2);
-    });
+  private async loadRules() {
+    const rules: Rule[] = await this.storage.getRules();
+    this.rules = [...rules];
+    this.rulesStr = JSON.stringify(this.rules, null, 2);
   }
 
-  saveRules() {
-    chrome.storage.sync.set({rules: this.rules.slice()});
-    chrome.runtime.sendMessage({
-      type: 'updateRules',
-      rules: this.rules.slice(),
-    });
-
+  private async saveRules() {
+    await this.storage.setRules([...this.rules]);
     this.refresh();
   }
 
@@ -103,35 +102,31 @@ export class GdhApp extends LitElement {
   }
 
   onRuleChanged(event: CustomEvent<Rule>) {
-    this.rules = this.rules.map(rule => ({...rule}));
+    // Just trigger a Lit rendering cycle.
+    this.rules = [...this.rules];
   }
 
-  disableHelper() {
-    this.refresh(tab => {
-      chrome.runtime.sendMessage({type: 'disableHelper', tab});
-      return null;
-    });
+  async disableHelper() {
+    const activeTab = await getActiveTab();
+    await this.storage.setTabDisabled(activeTab.id);
+    await this.refresh();
     window.close();
   }
 
-  private refresh(runBefore?: (tab: chrome.tabs.Tab) => null) {
-    // refresh the tab now
-    chrome.tabs.query({active: true, currentWindow: true}, tabs => {
-      if (!tabs[0] || !tabs[0].id) return;
-      if (runBefore) runBefore(tabs[0]);
-      chrome.tabs.update(tabs[0].id, {url: tabs[0].url});
-    });
+  private async refresh() {
+    const activeTab = await getActiveTab();
+    if (activeTab) chrome.tabs.update(activeTab.id, {url: activeTab.url});
   }
 
   startImport() {
     this.isImport = true;
   }
 
-  confirmImport() {
+  async confirmImport() {
     try {
       const rules = JSON.parse(this.rulesStr);
-      this.rules = rules;
-      this.saveRules();
+      this.rules = [...rules];
+      await this.saveRules();
       this.isImport = false;
     } catch (e) {
       this.importError = e.message;
