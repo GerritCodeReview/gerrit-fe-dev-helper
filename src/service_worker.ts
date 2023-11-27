@@ -1,13 +1,34 @@
-import {DEFAULT_RULES, isInjectRule, isValidRule, Operator, Rule} from './utils';
+import { DEFAULT_RULES, isInjectRule, isValidRule, Operator, Rule } from './utils';
 
 let rules: Rule[] = [...DEFAULT_RULES];
 
+/**
+ * We are keeping track of which browser tabs have the extension enabled.
+ * We store a map from tab id to tab object in `chrome.storage.session`.
+ */
 interface TabState {
   tab: chrome.tabs.Tab;
 }
-
-// Enable / disable with one click and persist states per tab
-const TabStates = new Map<number, TabState>();
+async function getTabStates(): Promise<Map<number, TabState>> {
+  return (await chrome.storage.session.get('tabStates')) ?? new Map<number, TabState>();
+}
+async function setTabStates(tabStates: Map<number, TabState>) {
+  await chrome.storage.session.set({ tabStates });
+}
+async function setTabEnabled(tab: chrome.tabs.Tab) {
+  const tabStates = await getTabStates();
+  tabStates.set(tab.id, { tab });
+  await setTabStates(tabStates);
+}
+async function setTabDisabled(tabId: number) {
+  const tabStates = await getTabStates();
+  tabStates.delete(tabId);
+  await setTabStates(tabStates);
+}
+async function isTabEnabled(tabId: number) {
+  const tabStates = await getTabStates();
+  return tabStates.has(tabId);
+}
 
 // Load default configs and states when install
 chrome.runtime.onInstalled.addListener(() => {
@@ -15,9 +36,9 @@ chrome.runtime.onInstalled.addListener(() => {
     const existingRules: Rule[] = res['rules'] || [];
     const validRules = existingRules.filter(isValidRule);
     if (!validRules.length) {
-      chrome.storage.sync.set({rules});
+      chrome.storage.sync.set({ rules });
     } else {
-      chrome.storage.sync.set({rules: validRules});
+      chrome.storage.sync.set({ rules: validRules });
     }
   });
 });
@@ -26,47 +47,50 @@ chrome.runtime.onInstalled.addListener(() => {
 chrome.tabs.onActivated.addListener(() => {
   checkCurrentTab();
 });
+chrome.tabs.onUpdated.addListener(() => {
+  checkCurrentTab();
+});
 
 // keep a reference to lastFocusedWindow
 let lastFocusedWindow: chrome.tabs.Tab;
 
 // Communication channel between background and content_script / popup
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
   if (request.type === 'updateRules') {
     rules = request.rules;
   } else if (request.type === 'disableHelper') {
-    const tab = request.tab || {id: undefined};
+    const tab = request.tab || { id: undefined };
     chrome.browserAction.disable(tab.id);
-    chrome.browserAction.setIcon({tabId: tab.id, path: 'gray-32.png'});
-    chrome.browserAction.setPopup({tabId: tab.id, popup: ''});
-    TabStates.delete(tab.id);
+    disableHelper(tab.id);
   } else if (request.type === 'isEnabled') {
-    const tab = sender.tab || lastFocusedWindow || {id: undefined};
-    sendResponse(TabStates.has(tab.id));
+    const tab = sender.tab || lastFocusedWindow || { id: undefined };
+    const isEnabled = await isTabEnabled(tab.id);
+    sendResponse(isEnabled);
   }
 });
 
-function onHeadersReceived(resp: chrome.webRequest.WebResponseHeadersDetails) {
+async function onHeadersReceived(resp: chrome.webRequest.WebResponseHeadersDetails) {
   if (!resp || !resp.responseHeaders) return {};
-
-  if (!TabStates.has(resp.tabId)) {
-    return {responseHeaders: resp.responseHeaders};
+  const isEnabled = await isTabEnabled(resp.tabId);
+  if (!isEnabled) {
+    return { responseHeaders: resp.responseHeaders };
   }
+
   const matches = rules.filter(isValidRule)
-                    .filter(
-                        rule => rule.operator === Operator.REMOVE_RESPONSE_HEADER
-                            && !rule.disabled
-                            && new RegExp(rule.target).test(resp.url));
+    .filter(
+      rule => rule.operator === Operator.REMOVE_RESPONSE_HEADER
+        && !rule.disabled
+        && new RegExp(rule.target).test(resp.url));
   matches.forEach(rule => {
     const removedHeaders = rule.destination.split(",").map(name => name.toLowerCase());
     resp.responseHeaders = resp.responseHeaders
       .filter(h => !removedHeaders.includes(h.name.toLowerCase()));
   });
   const addMatches = rules.filter(isValidRule)
-                  .filter(
-                      rule => rule.operator === Operator.ADD_RESPONSE_HEADER
-                          && !rule.disabled
-                          && new RegExp(rule.target).test(resp.url));
+    .filter(
+      rule => rule.operator === Operator.ADD_RESPONSE_HEADER
+        && !rule.disabled
+        && new RegExp(rule.target).test(resp.url));
   addMatches.forEach(rule => {
     const addedHeaders = rule.destination.split("|")
     addedHeaders.forEach(addedHeader => {
@@ -79,45 +103,46 @@ function onHeadersReceived(resp: chrome.webRequest.WebResponseHeadersDetails) {
       }
     });
   });
-  return {responseHeaders: resp.responseHeaders};
+  return { responseHeaders: resp.responseHeaders };
 }
 
-function onBeforeRequest(details: chrome.webRequest.WebRequestBodyDetails) {
-  if (!TabStates.has(details.tabId)) {
-    return {cancel: false};
+async function onBeforeRequest(details: chrome.webRequest.WebRequestBodyDetails) {
+  const isEnabled = await isTabEnabled(details.tabId);
+  if (!isEnabled) {
+    return { cancel: false };
   }
 
   const matches = rules.filter(isValidRule)
-                    .filter(
-                        rule => !isInjectRule(rule) && !rule.disabled &&
-                            new RegExp(rule.target).test(details.url));
+    .filter(
+      rule => !isInjectRule(rule) && !rule.disabled &&
+        new RegExp(rule.target).test(details.url));
 
   const blockMatch = matches.find(rule => rule.operator === Operator.BLOCK);
   const redirectMatch = matches.find(rule => rule.operator === Operator.REDIRECT);
 
   // block match takes highest priority
   if (blockMatch) {
-    return {cancel: true};
+    return { cancel: true };
   }
 
   // then redirect
   if (redirectMatch) {
     return {
-        redirectUrl:
-            details.url.replace(new RegExp(redirectMatch.target), redirectMatch.destination),
-      };
+      redirectUrl:
+        details.url.replace(new RegExp(redirectMatch.target), redirectMatch.destination),
+    };
   }
 
   // otherwise, don't do anything
-  return {cancel: false};
+  return { cancel: false };
 }
 
-function onBeforeSendHeaders(
-    details: chrome.webRequest.WebRequestHeadersDetails) {
+async function onBeforeSendHeaders(
+  details: chrome.webRequest.WebRequestHeadersDetails) {
   if (!details || !details.requestHeaders) return {};
-
-  if (!TabStates.has(details.tabId)) {
-    return {requestHeaders: details.requestHeaders};
+  const isEnabled = await isTabEnabled(details.tabId);
+  if (!isEnabled) {
+    return { requestHeaders: details.requestHeaders };
   }
 
   let len = details.requestHeaders.length;
@@ -125,7 +150,7 @@ function onBeforeSendHeaders(
   while (--len) {
     const header = details.requestHeaders[len];
     if (header.name.toLowerCase() === 'cache-control' ||
-        header.name.toLowerCase() === 'x-google-cache-control') {
+      header.name.toLowerCase() === 'x-google-cache-control') {
       header.value = 'max-age=0, no-cache, no-store, must-revalidate';
       added = true;
     }
@@ -138,10 +163,10 @@ function onBeforeSendHeaders(
   }
 
   const matches = rules.filter(isValidRule)
-                    .filter(
-                        rule => rule.operator === Operator.ADD_REQUEST_HEADER
-                            && !rule.disabled
-                            && new RegExp(rule.target).test(details.url));
+    .filter(
+      rule => rule.operator === Operator.ADD_REQUEST_HEADER
+        && !rule.disabled
+        && new RegExp(rule.target).test(details.url));
   matches.forEach(rule => {
     const addedHeaders = rule.destination.split(",")
     addedHeaders.forEach(addedHeader => {
@@ -155,89 +180,53 @@ function onBeforeSendHeaders(
     });
   });
 
-  return {requestHeaders: details.requestHeaders};
+  return { requestHeaders: details.requestHeaders };
 }
 
-// remove csp
-// add cors header to all response
-function setUpListeners() {
-  // if already registered, return
-  if (chrome.webRequest.onHeadersReceived.hasListener(onHeadersReceived)) {
-    return;
-  }
+chrome.webRequest.onHeadersReceived.addListener(
+  onHeadersReceived, { urls: ['<all_urls>'] },
+  ['blocking', 'responseHeaders']);
 
-  // in case any listeners already set up, remove them first
-  removeListeners();
-  chrome.webRequest.onHeadersReceived.addListener(
-      onHeadersReceived, {urls: ['<all_urls>']},
-      ['blocking', 'responseHeaders']);
+chrome.webRequest.onBeforeRequest.addListener(
+  onBeforeRequest, { urls: ['<all_urls>'] }, ['blocking', 'extraHeaders']);
 
-  // blocking or redirecting
-  chrome.webRequest.onBeforeRequest.addListener(
-      onBeforeRequest, {urls: ['<all_urls>']}, ['blocking', 'extraHeaders']);
+chrome.webRequest.onBeforeSendHeaders.addListener(
+  onBeforeSendHeaders, { urls: ['<all_urls>'] },
+  ['blocking', 'requestHeaders']);
 
-  // disabling cache
-  chrome.webRequest.onBeforeSendHeaders.addListener(
-      onBeforeSendHeaders, {urls: ['<all_urls>']},
-      ['blocking', 'requestHeaders']);
+async function enableHelper(tab: chrome.tabs.Tab) {
+  chrome.browserAction.setIcon({ tabId: tab.id, path: 'icon-32.png' });
+  chrome.browserAction.setPopup({ tabId: tab.id, popup: 'popup.html' });
+  await setTabEnabled(tab);
 }
 
-function removeListeners() {
-  if (chrome.webRequest.onHeadersReceived.hasListener(onHeadersReceived)) {
-    chrome.webRequest.onHeadersReceived.removeListener(onHeadersReceived);
-  }
-
-  if (chrome.webRequest.onBeforeRequest.hasListener(onBeforeRequest)) {
-    chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequest);
-  }
-
-  if (chrome.webRequest.onBeforeSendHeaders.hasListener(onBeforeSendHeaders)) {
-    chrome.webRequest.onBeforeSendHeaders.removeListener(onBeforeSendHeaders);
-  }
+async function disableHelper(tab: chrome.tabs.Tab) {
+  chrome.browserAction.setIcon({ tabId: tab.id, path: 'gray-32.png' });
+  chrome.browserAction.setPopup({ tabId: tab.id, popup: '' });
+  await setTabDisabled(tab.id);
 }
 
-function enableHelper(tab: chrome.tabs.Tab) {
-  // disable -> enable
-  chrome.browserAction.setIcon({tabId: tab.id, path: 'icon-32.png'});
-  chrome.browserAction.setPopup({tabId: tab.id, popup: 'popup.html'});
-  TabStates.set(tab.id, {tab});
-
-  // set up listeners
-  setUpListeners();
-}
-
-function disableHelper(tab: chrome.tabs.Tab) {
-  chrome.browserAction.setIcon({tabId: tab.id, path: 'gray-32.png'});
-  chrome.browserAction.setPopup({tabId: tab.id, popup: ''});
-  TabStates.delete(tab.id);
-
-  // Remove listeners if no tab enabled
-  if (TabStates.size === 0) {
-    removeListeners();
-  }
-}
-
-chrome.browserAction.onClicked.addListener((tab) => {
-    if (TabStates.has(tab.id)) {
-      // enable -> disable
-      disableHelper(tab);
-    } else {
-      // disable -> enable
-      enableHelper(tab);
-      if (lastFocusedWindow) {
-        chrome.tabs.update(lastFocusedWindow.id!, {url: lastFocusedWindow.url});
-      }
+chrome.browserAction.onClicked.addListener(async (tab: chrome.tabs.Tab) => {
+  const isEnabled = await isTabEnabled(tab.id);
+  if (isEnabled) {
+    await disableHelper(tab);
+  } else {
+    await enableHelper(tab);
+    if (lastFocusedWindow) {
+      chrome.tabs.update(lastFocusedWindow.id!, { url: lastFocusedWindow.url });
     }
+  }
 });
 
-// Enable / disable the helper based on state of this tab
+// Enable / disable the helper (icon and popup.html) based on state of this tab
 // This will be called when tab was activated
-function checkCurrentTab() {
-  chrome.tabs.query({'active': true, 'lastFocusedWindow': true}, ([tab]) => {
+async function checkCurrentTab() {
+  chrome.tabs.query({ 'active': true, 'lastFocusedWindow': true }, ([tab]) => {
     if (lastFocusedWindow === tab) return;
     if (!tab || !tab.url) return;
 
-    if (TabStates.has(tab.id)) {
+    const isEnabled = await isTabEnabled(tab.id);
+    if (isEnabled) {
       enableHelper(tab);
     } else {
       disableHelper(tab);
@@ -252,14 +241,15 @@ function checkCurrentTab() {
   });
 }
 
-// check this so extension always have the right status
-// even after page refreshes / reloads etc
-setInterval(() => checkCurrentTab(), 1000);
+
+// TODO: Find out whether listening to `chrome.tabs.onActivated/onUpdated` is sufficient.
+// Note that 0.5 minutes is the smallest permitted value.
+chrome.alarms.create('periodic-check', { periodInMinutes: 0.5 });
+chrome.alarms.onAlarm.addListener((alarm) => {
+  if (alarm.name === 'periodic-check') checkCurrentTab();
+});
 
 // when removed, clear
-chrome.tabs.onRemoved.addListener(tabId => {
-  TabStates.delete(tabId);
-  if (TabStates.size === 0) {
-    removeListeners();
-  }
+chrome.tabs.onRemoved.addListener(async (tabId: number) => {
+  await setTabDisabled(tabId);
 });
