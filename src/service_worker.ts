@@ -1,64 +1,64 @@
-import {
-  DEFAULT_RULES,
-  isInjectRule,
-  isValidRule,
-  Operator,
-  Rule,
-} from './utils';
+import {isInjectRule, isValidRule, Operator, getActiveTab} from './utils';
+import {StorageUtil} from './storage';
 
-let rules: Rule[] = [...DEFAULT_RULES];
+const storage = new StorageUtil();
 
-interface TabState {
-  tab: chrome.tabs.Tab;
-}
+chrome.runtime.onInstalled.addListener(async () => {
+  storage.initTabsEnabled();
+  storage.initRules();
+});
 
-// Enable / disable with one click and persist states per tab
-const TabStates = new Map<number, TabState>();
+chrome.tabs.onActivated.addListener((activeInfo: {tabId: number}) => {
+  updateIconPopup(activeInfo.tabId);
+});
 
-// Load default configs and states when install
-chrome.runtime.onInstalled.addListener(() => {
-  chrome.storage.sync.get(['rules'], res => {
-    const existingRules: Rule[] = res['rules'] || [];
-    const validRules = existingRules.filter(isValidRule);
-    if (!validRules.length) {
-      chrome.storage.sync.set({rules});
-    } else {
-      chrome.storage.sync.set({rules: validRules});
+chrome.tabs.onUpdated.addListener(
+  (tabId: number, changeInfo: {status: string}) => {
+    // We have to do this (in addition to onActiviated), because Chrome assigns
+    // the default icon and popup *after* the tab is activated, just before the
+    // tab enters 'complete' status.
+    if (changeInfo.status === 'complete') {
+      updateIconPopup(tabId);
     }
-  });
+  }
+);
+
+chrome.tabs.onRemoved.addListener((tabId: number) => {
+  storage.setTabDisabled(tabId);
 });
 
-// Check if we should enable or disable the extension when activated tab changed
-chrome.tabs.onActivated.addListener(() => {
-  checkCurrentTab();
+chrome.storage.onChanged.addListener((changes, namespace) => {
+  const iconUpdateRequired = Object.keys(changes).some(
+    key => key === 'tabsEnabled'
+  );
+  if (iconUpdateRequired) updateIconPopup();
 });
 
-// keep a reference to lastFocusedWindow
-let lastFocusedWindow: chrome.tabs.Tab;
-
-// Communication channel between background and content_script / popup
+// Communication channel between service worker and content_script (or popup).
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.type === 'updateRules') {
-    rules = request.rules;
-  } else if (request.type === 'disableHelper') {
-    const tab = request.tab || {id: undefined};
-    chrome.browserAction.disable(tab.id);
-    chrome.browserAction.setIcon({tabId: tab.id, path: 'gray-32.png'});
-    chrome.browserAction.setPopup({tabId: tab.id, popup: ''});
-    TabStates.delete(tab.id);
-  } else if (request.type === 'isEnabled') {
-    const tab = sender.tab || lastFocusedWindow || {id: undefined};
-    sendResponse(TabStates.has(tab.id));
+  // Note that a content script does not have access to its own tab id.
+  // Otherwise we could use `chrome.storage.session.setAccessLevel()` to allow
+  // the content script direct access to the storage of enabled tab ids.
+  if (request.type === 'isEnabled') {
+    // Note that the listener cannot be async, so we cannot await here.
+    storage.isTabEnabled(sender.tab?.id).then(isEnabled => {
+      sendResponse(isEnabled);
+    });
+    // Returning `true` tells Chrome that `sendResponse()` will be called async.
+    return true;
   }
 });
 
-function onHeadersReceived(resp: chrome.webRequest.WebResponseHeadersDetails) {
+async function onHeadersReceived(
+  resp: chrome.webRequest.WebResponseHeadersDetails
+) {
   if (!resp || !resp.responseHeaders) return {};
-
-  if (!TabStates.has(resp.tabId)) {
+  const isEnabled = await storage.isTabEnabled(resp.tabId);
+  if (!isEnabled) {
     return {responseHeaders: resp.responseHeaders};
   }
-  const matches = rules
+
+  const matches = (await storage.getRules())
     .filter(isValidRule)
     .filter(
       rule =>
@@ -74,7 +74,7 @@ function onHeadersReceived(resp: chrome.webRequest.WebResponseHeadersDetails) {
       h => !removedHeaders.includes(h.name.toLowerCase())
     );
   });
-  const addMatches = rules
+  const addMatches = (await storage.getRules())
     .filter(isValidRule)
     .filter(
       rule =>
@@ -97,12 +97,15 @@ function onHeadersReceived(resp: chrome.webRequest.WebResponseHeadersDetails) {
   return {responseHeaders: resp.responseHeaders};
 }
 
-function onBeforeRequest(details: chrome.webRequest.WebRequestBodyDetails) {
-  if (!TabStates.has(details.tabId)) {
+async function onBeforeRequest(
+  details: chrome.webRequest.WebRequestBodyDetails
+) {
+  const isEnabled = await storage.isTabEnabled(details.tabId);
+  if (!isEnabled) {
     return {cancel: false};
   }
 
-  const matches = rules
+  const matches = (await storage.getRules())
     .filter(isValidRule)
     .filter(
       rule =>
@@ -135,12 +138,12 @@ function onBeforeRequest(details: chrome.webRequest.WebRequestBodyDetails) {
   return {cancel: false};
 }
 
-function onBeforeSendHeaders(
+async function onBeforeSendHeaders(
   details: chrome.webRequest.WebRequestHeadersDetails
 ) {
   if (!details || !details.requestHeaders) return {};
-
-  if (!TabStates.has(details.tabId)) {
+  const isEnabled = await storage.isTabEnabled(details.tabId);
+  if (!isEnabled) {
     return {requestHeaders: details.requestHeaders};
   }
 
@@ -163,7 +166,7 @@ function onBeforeSendHeaders(
     });
   }
 
-  const matches = rules
+  const matches = (await storage.getRules())
     .filter(isValidRule)
     .filter(
       rule =>
@@ -187,115 +190,57 @@ function onBeforeSendHeaders(
   return {requestHeaders: details.requestHeaders};
 }
 
-// remove csp
-// add cors header to all response
-function setUpListeners() {
-  // if already registered, return
-  if (chrome.webRequest.onHeadersReceived.hasListener(onHeadersReceived)) {
-    return;
-  }
+chrome.webRequest.onHeadersReceived.addListener(
+  onHeadersReceived,
+  {urls: ['<all_urls>']},
+  ['blocking', 'responseHeaders']
+);
+chrome.webRequest.onBeforeRequest.addListener(
+  onBeforeRequest,
+  {urls: ['<all_urls>']},
+  ['blocking', 'extraHeaders']
+);
+chrome.webRequest.onBeforeSendHeaders.addListener(
+  onBeforeSendHeaders,
+  {urls: ['<all_urls>']},
+  ['blocking', 'requestHeaders']
+);
 
-  // in case any listeners already set up, remove them first
-  removeListeners();
-  chrome.webRequest.onHeadersReceived.addListener(
-    onHeadersReceived,
-    {urls: ['<all_urls>']},
-    ['blocking', 'responseHeaders']
-  );
-
-  // blocking or redirecting
-  chrome.webRequest.onBeforeRequest.addListener(
-    onBeforeRequest,
-    {urls: ['<all_urls>']},
-    ['blocking', 'extraHeaders']
-  );
-
-  // disabling cache
-  chrome.webRequest.onBeforeSendHeaders.addListener(
-    onBeforeSendHeaders,
-    {urls: ['<all_urls>']},
-    ['blocking', 'requestHeaders']
-  );
-}
-
-function removeListeners() {
-  if (chrome.webRequest.onHeadersReceived.hasListener(onHeadersReceived)) {
-    chrome.webRequest.onHeadersReceived.removeListener(onHeadersReceived);
-  }
-
-  if (chrome.webRequest.onBeforeRequest.hasListener(onBeforeRequest)) {
-    chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequest);
-  }
-
-  if (chrome.webRequest.onBeforeSendHeaders.hasListener(onBeforeSendHeaders)) {
-    chrome.webRequest.onBeforeSendHeaders.removeListener(onBeforeSendHeaders);
-  }
-}
-
-function enableHelper(tab: chrome.tabs.Tab) {
-  // disable -> enable
-  chrome.browserAction.setIcon({tabId: tab.id, path: 'icon-32.png'});
-  chrome.browserAction.setPopup({tabId: tab.id, popup: 'popup.html'});
-  TabStates.set(tab.id, {tab});
-
-  // set up listeners
-  setUpListeners();
-}
-
-function disableHelper(tab: chrome.tabs.Tab) {
-  chrome.browserAction.setIcon({tabId: tab.id, path: 'gray-32.png'});
-  chrome.browserAction.setPopup({tabId: tab.id, popup: ''});
-  TabStates.delete(tab.id);
-
-  // Remove listeners if no tab enabled
-  if (TabStates.size === 0) {
-    removeListeners();
-  }
-}
-
-chrome.browserAction.onClicked.addListener(tab => {
-  if (TabStates.has(tab.id)) {
-    // enable -> disable
-    disableHelper(tab);
+// This is a click on the extension icon.
+chrome.action.onClicked.addListener(async (tab: chrome.tabs.Tab) => {
+  const isEnabled = await storage.isTabEnabled(tab.id);
+  if (isEnabled) {
+    await storage.setTabDisabled(tab.id);
   } else {
-    // disable -> enable
-    enableHelper(tab);
-    if (lastFocusedWindow) {
-      chrome.tabs.update(lastFocusedWindow.id!, {url: lastFocusedWindow.url});
-    }
+    await storage.setTabEnabled(tab.id);
+    chrome.tabs.reload(tab.id);
   }
 });
 
-// Enable / disable the helper based on state of this tab
-// This will be called when tab was activated
-function checkCurrentTab() {
-  chrome.tabs.query({active: true, lastFocusedWindow: true}, ([tab]) => {
-    if (lastFocusedWindow === tab) return;
-    if (!tab || !tab.url) return;
-
-    if (TabStates.has(tab.id)) {
-      enableHelper(tab);
-    } else {
-      disableHelper(tab);
-    }
-
-    lastFocusedWindow = tab;
-
-    // read the latest states and rules
-    chrome.storage.sync.get(['rules'], res => {
-      rules = res['rules'] || [];
-    });
-  });
+/**
+ * Update the icon and the popup of the extension depending on whether the
+ * extension is enabled for the given tab id. If not tab id is provided, then
+ * the active tab is updated.
+ *
+ * Must be called when the user switches tabs or when the enabled state
+ * changes.
+ *
+ * The icon just changes between gray and green.
+ *
+ * The popup is either enabled or disabled.
+ */
+async function updateIconPopup(tabId?: number) {
+  if (!tabId) {
+    const activeTab = await getActiveTab();
+    if (!activeTab.id) return;
+    tabId = activeTab.id;
+  }
+  const isEnabled = await storage.isTabEnabled(tabId);
+  if (isEnabled) {
+    chrome.action.setIcon({tabId, path: 'icon-32.png'});
+    chrome.action.setPopup({tabId, popup: 'popup.html'});
+  } else {
+    chrome.action.setIcon({tabId, path: 'gray-32.png'});
+    chrome.action.setPopup({tabId, popup: ''});
+  }
 }
-
-// check this so extension always have the right status
-// even after page refreshes / reloads etc
-setInterval(() => checkCurrentTab(), 1000);
-
-// when removed, clear
-chrome.tabs.onRemoved.addListener(tabId => {
-  TabStates.delete(tabId);
-  if (TabStates.size === 0) {
-    removeListeners();
-  }
-});
