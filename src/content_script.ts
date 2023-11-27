@@ -1,4 +1,5 @@
 import {isInjectRule, Operator, Rule, getUrlParameter} from './utils';
+import {StorageUtil} from './storage';
 
 declare global {
   interface Window {
@@ -64,97 +65,96 @@ function createSnackBar(message: string) {
 }
 
 // Apply injection rules to Gerrit sites if enabled
-chrome.runtime.sendMessage({type: 'isEnabled'}, isEnabled => {
+chrome.runtime.sendMessage({type: 'isEnabled'}, async isEnabled => {
   if (!isEnabled) return;
 
-  chrome.storage.sync.get(['rules'], result => {
-    if (!result['rules']) return;
-    const rules = result['rules'] as Rule[];
+  console.log('Gerrit FE Dev Helper is enabled.');
 
-    // load
-    rules.filter(isInjectRule).forEach(rule => {
-      if (rule.disabled) return;
-      if (rule.operator === Operator.INJECT_HTML_PLUGIN) {
-        onGerritReady().then(() => {
-          const link = document.createElement('link');
-          link.href = rule.destination;
-          link.rel = 'import';
-          document.head.appendChild(link);
-        });
-      } else if (rule.operator === Operator.INJECT_HTML_CODE) {
-        const el = document.createElement('div');
-        el.innerHTML = rule.destination;
-        document.body.appendChild(el);
-      } else if (rule.operator === Operator.INJECT_JS_PLUGIN) {
-        onGerritReady().then(() => {
-          const link = document.createElement('script');
-          link.setAttribute('src', rule.destination);
-          link.setAttribute('crossorigin', 'anonymous');
-          document.head.appendChild(link);
-        });
-      } else if (rule.operator === Operator.INJECT_JS_MODULE_PLUGIN) {
-        onGerritReady().then(() => {
-          const link = document.createElement('script');
-          link.setAttribute('type', 'module');
-          link.setAttribute('src', rule.destination);
-          link.setAttribute('crossorigin', 'anonymous');
-          document.head.appendChild(link);
-        });
-      } else if (rule.operator === Operator.INJECT_JS_CODE) {
-        const link = document.createElement('script');
-        link.innerHTML = rule.destination;
+  const storage = new StorageUtil();
+  const rules = await storage.getRules();
+
+  for (const rule of rules) {
+    if (rule.disabled) return;
+    if (rule.operator === Operator.INJECT_HTML_PLUGIN) {
+      onGerritReady().then(() => {
+        const link = document.createElement('link');
+        link.href = rule.destination;
+        link.rel = 'import';
         document.head.appendChild(link);
-      } else if (rule.operator === Operator.INJECT_EXP) {
-        const exps = getUrlParameter('experiment');
-        const hasSeachString = !!window.location.search;
-        const injectedExpNotInExps = new Set(
-          rule.destination
-            .trim()
-            .split(',')
-            .filter(exp => !exps.includes(exp.trim()))
+      });
+    } else if (rule.operator === Operator.INJECT_HTML_CODE) {
+      const el = document.createElement('div');
+      el.innerHTML = rule.destination;
+      document.body.appendChild(el);
+    } else if (rule.operator === Operator.INJECT_JS_PLUGIN) {
+      onGerritReady().then(() => {
+        const link = document.createElement('script');
+        link.setAttribute('src', rule.destination);
+        link.setAttribute('crossorigin', 'anonymous');
+        document.head.appendChild(link);
+      });
+    } else if (rule.operator === Operator.INJECT_JS_MODULE_PLUGIN) {
+      onGerritReady().then(() => {
+        const link = document.createElement('script');
+        link.setAttribute('type', 'module');
+        link.setAttribute('src', rule.destination);
+        link.setAttribute('crossorigin', 'anonymous');
+        document.head.appendChild(link);
+      });
+    } else if (rule.operator === Operator.INJECT_JS_CODE) {
+      const link = document.createElement('script');
+      link.innerHTML = rule.destination;
+      document.head.appendChild(link);
+    } else if (rule.operator === Operator.INJECT_EXP) {
+      const exps = getUrlParameter('experiment');
+      const hasSearchString = !!window.location.search;
+      const injectedExpNotInExps = new Set(
+        rule.destination
+          .trim()
+          .split(',')
+          .filter(exp => !exps.includes(exp.trim()))
+      );
+      if (injectedExpNotInExps.size) {
+        const addedParams = [...injectedExpNotInExps].reduce(
+          (str, exp) => (str += `experiment=${exp}&`),
+          ''
         );
-        if (injectedExpNotInExps.size) {
-          const addedParams = [...injectedExpNotInExps].reduce(
-            (str, exp) => (str += `experiment=${exp}&`),
-            ''
-          );
-          window.location.href += hasSeachString
-            ? `&${addedParams}`
-            : `?${addedParams}`;
-        }
+        window.location.href += hasSearchString
+          ? `&${addedParams}`
+          : `?${addedParams}`;
+      }
+    }
+  }
+
+  // test redirect rules
+  rules
+    .filter(rule => !isInjectRule(rule))
+    .forEach(rule => {
+      if (
+        rule.operator === Operator.REDIRECT &&
+        !rule.disabled &&
+        // only test for js/html
+        /\.(js|html)+$/.test(rule.destination)
+      ) {
+        fetch(rule.destination)
+          .then(res => {
+            if (res.status < 200 || res.status >= 300)
+              throw new Error('Resource not found');
+          })
+          .catch(e => {
+            const errorSnack = createSnackBar(
+              `You may have an invalid redirect rule from ${rule.target} to ${rule.destination}`
+            );
+
+            // in case body is unresolved
+            document.body.style.display = 'block';
+            document.body.style.opacity = '1';
+
+            setTimeout(() => {
+              errorSnack.remove();
+              numOfSnackBars--;
+            }, 10 * 1000);
+          });
       }
     });
-
-    // test redirect rules
-    rules
-      .filter(rule => !isInjectRule(rule))
-      .forEach(rule => {
-        if (
-          rule.operator === Operator.REDIRECT &&
-          !rule.disabled &&
-          // only test for js/html
-          /\.(js|html)+$/.test(rule.destination)
-        ) {
-          fetch(rule.destination)
-            .then(res => {
-              if (res.status < 200 || res.status >= 300)
-                throw new Error('Resource not found');
-            })
-            .catch(e => {
-              const errorSnack = createSnackBar(
-                `You may have an invalid redirect rule from ${rule.target} to ${rule.destination}`
-              );
-
-              // in case body is unresolved
-              document.body.style.display = 'block';
-              document.body.style.opacity = '1';
-
-              setTimeout(() => {
-                errorSnack.remove();
-                numOfSnackBars--;
-              }, 10 * 1000);
-            });
-        }
-      });
-  });
 });
