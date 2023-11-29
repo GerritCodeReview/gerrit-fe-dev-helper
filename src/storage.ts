@@ -77,7 +77,7 @@ export class Storage {
 
   // TABS ENABLED
 
-  private async getTabsEnabledAsync(): Promise<TabsEnabled> {
+  async getTabsEnabledAsync(): Promise<TabsEnabled> {
     const data = await chrome.storage.session.get('tabsEnabled');
     return (data?.['tabsEnabled'] as TabsEnabled) ?? {};
   }
