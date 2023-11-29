@@ -3,7 +3,7 @@
   "name": "Gerrit FE Dev Helper",
   "description": "This extension can help you development on Gerrit sites, frontend specifically",
   "version": "1.0.0",
-  "browser_action": {
+  "action": {
     "default_icon": "gray-32.png",
     "default_title": "Gerrit FE Dev Helper"
   },
