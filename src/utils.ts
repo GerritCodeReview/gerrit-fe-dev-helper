@@ -1,8 +1,5 @@
 import * as _DEFAULT_RULES from '../data/rules.json';
 
-/**
- * Default rules.
- */
 export const DEFAULT_RULES: Rule[] = _DEFAULT_RULES as Rule[];
 
 /**
@@ -20,13 +17,9 @@ export async function getDefaultRules() {
     console.log(e);
   }
 
-  // fallback to existing default rules
   return DEFAULT_RULES;
 }
 
-/**
- * Returns if it's a valid rule (syntax only).
- */
 export function isValidRule(rule: Rule) {
   return (
     Object.values(Operator).includes(rule.operator) &&
@@ -38,9 +31,6 @@ export function isValidRule(rule: Rule) {
   );
 }
 
-/**
- * Returns if it's a inject rule.
- */
 export function isInjectRule(rule: Rule) {
   return [
     Operator.INJECT_JS_MODULE_PLUGIN,
@@ -50,6 +40,132 @@ export function isInjectRule(rule: Rule) {
     Operator.INJECT_JS_CODE,
     Operator.INJECT_EXP,
   ].some(op => op === rule.operator);
+}
+
+const STATIC_RULES: chrome.declarativeNetRequest.Rule[] = [
+  {
+    action: {
+      requestHeaders: [
+        {
+          header: 'cache-control',
+          value: 'max-age=0, no-cache, no-store, must-revalidate',
+          operation: chrome.declarativeNetRequest.HeaderOperation.SET,
+        },
+        {
+          header: 'x-google-cache-control',
+          value: 'max-age=0, no-cache, no-store, must-revalidate',
+          operation: chrome.declarativeNetRequest.HeaderOperation.SET,
+        },
+      ],
+      type: chrome.declarativeNetRequest.RuleActionType.MODIFY_HEADERS,
+    },
+    condition: {
+      urlFilter: '*',
+    },
+    id: 314159,
+  },
+];
+
+export function getStaticRules(
+  tabIds: number[]
+): chrome.declarativeNetRequest.Rule[] {
+  return STATIC_RULES.map(rule => {
+    return {...rule, condition: {...rule.condition, tabIds}};
+  });
+}
+
+export function toChromeRule(
+  rule: Rule,
+  tabIds: number[],
+  ruleId: number
+): chrome.declarativeNetRequest.Rule | undefined {
+  if (rule.disabled) return undefined;
+  const type = convertOperatorToType(rule.operator);
+  if (!type) return undefined;
+  const redirect =
+    type === chrome.declarativeNetRequest.RuleActionType.REDIRECT
+      ? {url: rule.destination}
+      : undefined;
+  return {
+    action: {
+      redirect,
+      requestHeaders: requestHeaders(rule),
+      responseHeaders: responseHeaders(rule),
+      type,
+    },
+    condition: {
+      regexFilter: rule.target,
+      tabIds,
+    },
+    id: ruleId,
+  };
+}
+
+function requestHeaders(
+  rule: Rule
+): chrome.declarativeNetRequest.ModifyHeaderInfo[] | undefined {
+  if (rule.operator !== Operator.ADD_REQUEST_HEADER) {
+    return undefined;
+  }
+  return headerInfos(rule);
+}
+
+function responseHeaders(
+  rule: Rule
+): chrome.declarativeNetRequest.ModifyHeaderInfo[] | undefined {
+  if (
+    rule.operator !== Operator.ADD_RESPONSE_HEADER &&
+    rule.operator !== Operator.REMOVE_RESPONSE_HEADER
+  ) {
+    return undefined;
+  }
+  return headerInfos(rule);
+}
+
+function headerInfos(
+  rule: Rule
+): chrome.declarativeNetRequest.ModifyHeaderInfo[] | undefined {
+  if (
+    rule.operator !== Operator.ADD_REQUEST_HEADER &&
+    rule.operator !== Operator.ADD_RESPONSE_HEADER &&
+    rule.operator !== Operator.REMOVE_RESPONSE_HEADER
+  ) {
+    return undefined;
+  }
+  const operation =
+    rule.operator === Operator.REMOVE_RESPONSE_HEADER
+      ? chrome.declarativeNetRequest.HeaderOperation.REMOVE
+      : chrome.declarativeNetRequest.HeaderOperation.SET;
+
+  const headerInfos: chrome.declarativeNetRequest.ModifyHeaderInfo[] = [];
+  const ruleHeaders = rule.destination.split('|');
+  for (const header of ruleHeaders) {
+    const partial = header.split('=');
+    headerInfos.push({
+      header: partial[0],
+      operation,
+      value: partial[1],
+    });
+  }
+  return headerInfos;
+}
+
+export function convertOperatorToType(
+  op: Operator
+): chrome.declarativeNetRequest.RuleActionType | undefined {
+  if (op === Operator.BLOCK) {
+    return chrome.declarativeNetRequest.RuleActionType.BLOCK;
+  }
+  if (op === Operator.ADD_REQUEST_HEADER) {
+    return chrome.declarativeNetRequest.RuleActionType.MODIFY_HEADERS;
+  }
+  if (op === Operator.REMOVE_RESPONSE_HEADER) {
+    return chrome.declarativeNetRequest.RuleActionType.MODIFY_HEADERS;
+  }
+  if (op === Operator.REDIRECT) {
+    return chrome.declarativeNetRequest.RuleActionType.REDIRECT;
+  }
+  return undefined;
 }
 
 /**

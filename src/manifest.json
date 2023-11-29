@@ -25,13 +25,21 @@
       ]
     }
   ],
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "static_rules",
+        "enabled": true,
+        "path": "static_rules.json"
+      }
+    ]
+  },
   "content_security_policy": "script-src 'self'; object-src 'self';",
   "permissions": [
     "activeTab",
     "storage",
     "tabs",
-    "webRequest",
-    "webRequestBlocking"
+    "declarativeNetRequest"
   ],
   "host_permissions": [
     "https://*.git.corp.google.com/*",
