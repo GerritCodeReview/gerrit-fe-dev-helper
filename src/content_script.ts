@@ -1,4 +1,4 @@
-import {isInjectRule, Operator, Rule, getUrlParameter} from './utils';
+import {isInjectRule, Operator, getUrlParameter} from './utils';
 import {StorageUtil} from './storage';
 
 declare global {

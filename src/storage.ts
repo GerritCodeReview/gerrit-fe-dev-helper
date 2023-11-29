@@ -2,6 +2,11 @@ import {DEFAULT_RULES, Rule, isValidRule} from './utils';
 
 type TabsEnabled = {[tabId: string]: boolean};
 
+export enum StorageKey {
+  RULES = 'rules',
+  TABS_ENABLED = 'tabsEnabled',
+}
+
 /**
  * A utility that wraps all calls to `chrome.storage`.
  *
@@ -18,8 +23,8 @@ export class StorageUtil {
   // RULES
 
   async getRules(): Promise<Rule[]> {
-    const data = await chrome.storage.sync.get('rules');
-    return (data?.['rules'] as Rule[]) ?? [...DEFAULT_RULES];
+    const data = await chrome.storage.sync.get(StorageKey.RULES);
+    return (data?.[StorageKey.RULES] as Rule[]) ?? [...DEFAULT_RULES];
   }
 
   async setRules(rules: Rule[]) {
@@ -39,8 +44,8 @@ export class StorageUtil {
   // TABS ENABLED
 
   private async getTabsEnabled(): Promise<TabsEnabled> {
-    const data = await chrome.storage.session.get('tabsEnabled');
-    return (data?.['tabsEnabled'] as TabsEnabled) ?? {};
+    const data = await chrome.storage.session.get(StorageKey.TABS_ENABLED);
+    return (data?.[StorageKey.TABS_ENABLED] as TabsEnabled) ?? {};
   }
 
   private async setTabsEnabled(tabsEnabled: TabsEnabled) {
@@ -62,6 +67,11 @@ export class StorageUtil {
   async isTabEnabled(tabId: number) {
     const tabsEnabled: TabsEnabled = await this.getTabsEnabled();
     return tabsEnabled[`${tabId}`] === true;
+  }
+
+  async getTabsEnabledIds(): Promise<number[]> {
+    const tabs = await this.getTabsEnabled();
+    return Object.keys(tabs).map(id => Number(id));
   }
 
   async initTabsEnabled() {
