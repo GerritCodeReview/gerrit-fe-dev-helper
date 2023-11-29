@@ -30,8 +30,7 @@
     "activeTab",
     "storage",
     "tabs",
-    "webRequest",
-    "webRequestBlocking"
+    "declarativeNetRequest",
   ],
   "host_permissions": [
     "https://*.git.corp.google.com/*",
