@@ -81,12 +81,11 @@ export class GdhApp extends LitElement {
   }
 
   resetRules() {
-    getDefaultRules().then(rules => {
-      this.rules = [...rules];
-      this.rulesStr = JSON.stringify(this.rules, null, 2);
-      window.localStorage.removeItem('helper-announcement');
-      this.requestUpdate();
-    });
+    const rules = getDefaultRules();
+    this.rules = [...rules];
+    this.rulesStr = JSON.stringify(this.rules, null, 2);
+    window.localStorage.removeItem('helper-announcement');
+    this.requestUpdate();
   }
 
   onRuleDeletion(event: CustomEvent<Rule>) {
