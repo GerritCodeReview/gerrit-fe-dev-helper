@@ -188,20 +188,20 @@ chrome.webRequest.onBeforeSendHeaders.addListener(
 );
 
 async function enableHelper(tabId: number) {
-  chrome.browserAction.enable(tabId);
-  chrome.browserAction.setIcon({tabId, path: 'icon-32.png'});
-  chrome.browserAction.setPopup({tabId, popup: 'popup.html'});
+  chrome.action.enable(tabId);
+  chrome.action.setIcon({tabId, path: 'icon-32.png'});
+  chrome.action.setPopup({tabId, popup: 'popup.html'});
   await storage.setTabEnabled(tabId);
 }
 
 async function disableHelper(tabId: number) {
-  chrome.browserAction.disable(tabId);
-  chrome.browserAction.setIcon({tabId, path: 'gray-32.png'});
-  chrome.browserAction.setPopup({tabId, popup: ''});
+  chrome.action.disable(tabId);
+  chrome.action.setIcon({tabId, path: 'gray-32.png'});
+  chrome.action.setPopup({tabId, popup: ''});
   await storage.setTabDisabled(tabId);
 }
 
-chrome.browserAction.onClicked.addListener((tab: chrome.tabs.Tab) => {
+chrome.action.onClicked.addListener((tab: chrome.tabs.Tab) => {
   const isEnabled = storage.isTabEnabledCached(tab.id);
   const activeTabId = storage.getActiveTabIdCached();
   if (isEnabled) {
