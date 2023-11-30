@@ -1,6 +1,36 @@
 [
   {
     "disabled": false,
+    "target": "https://cdn.googlesource.com/polygerrit_ui/[0-9.]+/elements/.*",
+    "operator": "redirect",
+    "destination": "http://localhost:8081/elements/gr-app.js"
+  },
+  {
+    "disabled": false,
+    "target": "https://cdn.googlesource.com/polygerrit_ui/[0-9.]+/styles/",
+    "operator": "redirect",
+    "destination": "http://localhost:8081/styles/"
+  },
+  {
+    "destination": "http://localhost:8081/existing-plugin.js",
+    "disabled": true,
+    "operator": "redirect",
+    "target": "https://cdn.googlesource.com/polygerrit_assets/.*/plugins/.*/existing-plugin.js"
+  },
+  {
+    "destination": "http://localhost:8081/my-new-plugin.js",
+    "disabled": true,
+    "operator": "injectJSPlugin",
+    "target": ""
+  },
+  {
+    "disabled": false,
+    "target": ".*",
+    "operator": "addReqHeader",
+    "destination": "X-TEST-ORIGIN=gerrit-fe-dev-helper"
+  },
+  {
+    "disabled": false,
     "target": ".*",
     "operator": "addRespHeader",
     "destination": "Access-Control-Allow-Origin=*|X-WEBKIT-CSP=*"
@@ -30,21 +60,15 @@
     "destination": ""
   },
   {
-    "disabled": false,
-    "target": "(.*)cdn.googlesource.com/polygerrit_ui/[0-9.]+/elements/.*",
-    "operator": "redirect",
-    "destination": "http://localhost:8081/elements/gr-app.js"
+    "destination": "",
+    "disabled": true,
+    "operator": "block",
+    "target": "https://cdn.googlesource.com/polygerrit_assets/.*/plugins/.*"
   },
   {
-    "disabled": false,
-    "target": "(.*)cdn.googlesource.com/polygerrit_ui/[0-9.]+/styles/",
-    "operator": "redirect",
-    "destination": "http://localhost:8081/styles/"
-  },
-  {
-    "disabled": false,
-    "target": ".*",
-    "operator": "addReqHeader",
-    "destination": "X-TEST-ORIGIN=gerrit-fe-dev-helper"
+    "destination": "",
+    "disabled": true,
+    "operator": "block",
+    "target": "https://.*.git.corp.google.com/plugins/.*"
   }
 ]
