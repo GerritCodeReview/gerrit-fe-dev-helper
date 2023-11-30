@@ -158,9 +158,6 @@ export function convertOperatorToType(
   return undefined;
 }
 
-/**
- * Supported operators.
- */
 export enum Operator {
   BLOCK = 'block',
   REDIRECT = 'redirect',
@@ -173,9 +170,6 @@ export enum Operator {
   INJECT_EXP = 'injectExp',
 }
 
-/**
- * Rule type.
- */
 export interface Rule {
   disabled: boolean;
   target: string;
@@ -183,9 +177,6 @@ export interface Rule {
   destination: string;
 }
 
-/**
- * Util to get url parameters
- */
 export function getUrlParameter(param: string) {
   const qs = window.location.search.substring(1);
   const partials = qs.split('&');
