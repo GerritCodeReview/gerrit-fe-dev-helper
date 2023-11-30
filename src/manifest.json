@@ -13,7 +13,6 @@
   },
   "content_scripts": [
     {
-      "run_at": "document_end",
       "matches": [
         "https://*.git.corp.google.com/*",
         "https://*.staging-git.corp.google.com/*",
@@ -26,11 +25,14 @@
         "https://review.opendev.org/*"
       ],
       "js": [
+        "webcomponents-lite.js",
         "content_script.js"
       ]
     }
   ],
-  "content_security_policy": "script-src 'self'; object-src 'self';",
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self';"
+  },
   "permissions": [
     "activeTab",
     "storage",
