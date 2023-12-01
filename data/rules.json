@@ -1,6 +1,36 @@
 [
   {
     "disabled": false,
+    "target": "https://cdn.googlesource.com/polygerrit_ui/[0-9.]+/elements/.*",
+    "operator": "redirect",
+    "destination": "http://localhost:8081/elements/gr-app.js"
+  },
+  {
+    "disabled": false,
+    "target": "https://cdn.googlesource.com/polygerrit_ui/[0-9.]+/styles/",
+    "operator": "redirect",
+    "destination": "http://localhost:8081/styles/"
+  },
+  {
+    "destination": "http://localhost:8081/existing-plugin.js",
+    "disabled": true,
+    "operator": "redirect",
+    "target": "https://cdn.googlesource.com/polygerrit_assets/.*/plugins/.*/existing-plugin.js"
+  },
+  {
+    "destination": "http://localhost:8081/my-new-plugin.js",
+    "disabled": true,
+    "operator": "injectJSPlugin",
+    "target": ""
+  },
+  {
+    "disabled": false,
+    "target": ".*",
+    "operator": "addReqHeader",
+    "destination": "X-TEST-ORIGIN=gerrit-fe-dev-helper"
+  },
+  {
+    "disabled": false,
     "target": ".*",
     "operator": "addRespHeader",
     "destination": "Access-Control-Allow-Origin=*|X-WEBKIT-CSP=*"
@@ -30,27 +60,15 @@
     "destination": ""
   },
   {
-    "disabled": false,
-    "target": "(.*)cdn.googlesource.com/polygerrit_ui/[0-9.]+/elements/.*",
-    "operator": "redirect",
-    "destination": "http://localhost:8081/elements/gr-app.js"
+    "destination": "",
+    "disabled": true,
+    "operator": "block",
+    "target": "https://cdn.googlesource.com/polygerrit_assets/.*/plugins/.*"
   },
   {
-    "disabled": false,
-    "target": "(.*)cdn.googlesource.com/polygerrit_ui/[0-9.]+/styles/",
-    "operator": "redirect",
-    "destination": "http://localhost:8081/styles/"
-  },
-  {
-    "disabled": false,
-    "target": ".*",
-    "operator": "addReqHeader",
-    "destination": "X-TEST-ORIGIN=gerrit-fe-dev-helper"
-  },
-  {
-    "disabled": false,
-    "target": "",
-    "operator": "injectJSCode",
-    "destination": "let helperTip = document.createElement('span'); helperTip.innerHTML = `Gerrit dev helper is enabled`; helperTip.style = 'color: white;font-weight:bold;padding:10px;z-index:10000;display:block;position:fixed;bottom:0;right:0;background-color:red;'; let _errorLog = console.error; let numOfErrors = 0; console.error = (...args) => { _errorLog.call(console, ...args); numOfErrors++; helperTip.innerHTML = `Gerrit dev helper is enabled (${numOfErrors} js errors)`; }; document.body.appendChild(helperTip);"
+    "destination": "",
+    "disabled": true,
+    "operator": "block",
+    "target": "https://.*.git.corp.google.com/plugins/.*"
   }
 ]
