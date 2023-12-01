@@ -24,7 +24,6 @@ export function isInjectRule(rule: Rule) {
     Operator.INJECT_JS_PLUGIN,
     Operator.INJECT_HTML_CODE,
     Operator.INJECT_HTML_PLUGIN,
-    Operator.INJECT_JS_CODE,
     Operator.INJECT_EXP,
   ].some(op => op === rule.operator);
 }
@@ -170,7 +169,6 @@ export enum Operator {
   INJECT_HTML_CODE = 'injectHtmlCode',
   INJECT_JS_PLUGIN = 'injectJSPlugin',
   INJECT_JS_MODULE_PLUGIN = 'injectJSModule',
-  INJECT_JS_CODE = 'injectJSCode',
   REMOVE_RESPONSE_HEADER = 'rRespHeader',
   ADD_RESPONSE_HEADER = 'addRespHeader',
   ADD_REQUEST_HEADER = 'addReqHeader',
