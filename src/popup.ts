@@ -1,8 +1,14 @@
 import {LitElement, html, css} from 'lit';
 import {customElement, property} from 'lit/decorators.js';
 
-import {getDefaultRules, isInjectRule, Operator, Rule} from './utils';
-import {Storage} from './storage';
+import {
+  getDefaultRules,
+  isInjectRule,
+  Operator,
+  Rule,
+  getActiveTab,
+} from './utils';
+import {StorageUtil} from './storage';
 
 const EMPTY_RULE = {
   disabled: false,
@@ -42,7 +48,7 @@ export class GdhApp extends LitElement {
   @property() rulesStr = '';
   @property() importError = '';
 
-  private readonly storage = new Storage();
+  private readonly storage = new StorageUtil();
 
   constructor() {
     super();
@@ -74,13 +80,12 @@ export class GdhApp extends LitElement {
     this.rules = [...this.rules, {...EMPTY_RULE}];
   }
 
-  resetRules() {
-    getDefaultRules().then(rules => {
-      this.rules = [...rules];
-      this.rulesStr = JSON.stringify(this.rules, null, 2);
-      window.localStorage.removeItem('helper-announcement');
-      this.requestUpdate();
-    });
+  async resetRules() {
+    const rules = await getDefaultRules();
+    this.rules = [...rules];
+    this.rulesStr = JSON.stringify(this.rules, null, 2);
+    window.localStorage.removeItem('helper-announcement');
+    this.requestUpdate();
   }
 
   onRuleDeletion(event: CustomEvent<Rule>) {
@@ -100,21 +105,17 @@ export class GdhApp extends LitElement {
     this.rules = this.rules.map(rule => ({...rule}));
   }
 
-  disableHelper() {
-    this.refresh(tab => {
-      chrome.runtime.sendMessage({type: 'disableHelper', tab});
-      return null;
-    });
+  async disableHelper() {
+    const activeTab = await getActiveTab();
+    console.log(`popup disableHelper ${activeTab.id}`);
+    await this.storage.setTabDisabled(activeTab.id);
+    await this.refresh();
     window.close();
   }
 
-  private refresh(runBefore?: (tab: chrome.tabs.Tab) => null) {
-    // refresh the tab now
-    chrome.tabs.query({active: true, currentWindow: true}, tabs => {
-      if (!tabs[0] || !tabs[0].id) return;
-      if (runBefore) runBefore(tabs[0]);
-      chrome.tabs.update(tabs[0].id, {url: tabs[0].url});
-    });
+  private async refresh() {
+    const activeTab = await getActiveTab();
+    if (activeTab) chrome.tabs.update(activeTab.id, {url: activeTab.url});
   }
 
   startImport() {
@@ -314,11 +315,9 @@ export class GdhRuleItem extends LitElement {
   operators = [
     Operator.BLOCK,
     Operator.REDIRECT,
-    Operator.INJECT_HTML_PLUGIN,
     Operator.INJECT_HTML_CODE,
     Operator.INJECT_JS_PLUGIN,
     Operator.INJECT_JS_MODULE_PLUGIN,
-    Operator.INJECT_JS_CODE,
     Operator.INJECT_EXP,
     Operator.ADD_REQUEST_HEADER,
     Operator.ADD_RESPONSE_HEADER,

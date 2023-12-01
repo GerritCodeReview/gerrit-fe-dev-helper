@@ -7,15 +7,15 @@ export const DEFAULT_RULES: Rule[] = _DEFAULT_RULES as Rule[];
  */
 export async function getDefaultRules() {
   // try fetch from remote
-  const remoteRulesUrl =
-    'https://gerrit.googlesource.com/gerrit-fe-dev-helper/+/refs/heads/master/data/rules.json?format=TEXT';
-  try {
-    const response = await fetch(remoteRulesUrl);
-    const encodedText = await response.text();
-    return JSON.parse(atob(encodedText));
-  } catch (e) {
-    console.log(e);
-  }
+  // const remoteRulesUrl =
+  //   'https://gerrit.googlesource.com/gerrit-fe-dev-helper/+/refs/heads/master/data/rules.json?format=TEXT';
+  // try {
+  //   const response = await fetch(remoteRulesUrl);
+  //   const encodedText = await response.text();
+  //   return JSON.parse(atob(encodedText));
+  // } catch (e) {
+  //   console.log(e);
+  // }
 
   return DEFAULT_RULES;
 }
@@ -36,43 +36,38 @@ export function isInjectRule(rule: Rule) {
     Operator.INJECT_JS_MODULE_PLUGIN,
     Operator.INJECT_JS_PLUGIN,
     Operator.INJECT_HTML_CODE,
-    Operator.INJECT_HTML_PLUGIN,
-    Operator.INJECT_JS_CODE,
     Operator.INJECT_EXP,
   ].some(op => op === rule.operator);
 }
-
-const STATIC_RULES: chrome.declarativeNetRequest.Rule[] = [
-  {
-    action: {
-      requestHeaders: [
-        {
-          header: 'cache-control',
-          value: 'max-age=0, no-cache, no-store, must-revalidate',
-          operation: chrome.declarativeNetRequest.HeaderOperation.SET,
-        },
-        {
-          header: 'x-google-cache-control',
-          value: 'max-age=0, no-cache, no-store, must-revalidate',
-          operation: chrome.declarativeNetRequest.HeaderOperation.SET,
-        },
-      ],
-      type: chrome.declarativeNetRequest.RuleActionType.MODIFY_HEADERS,
-    },
-    condition: {
-      urlFilter: '*',
-    },
-    id: 314159,
-  },
-];
 
 export function getStaticRules(
   tabIds: number[]
 ): chrome.declarativeNetRequest.Rule[] {
   if (tabIds.length === 0) return [];
-  return STATIC_RULES.map(rule => {
-    return {...rule, condition: {...rule.condition, tabIds}};
-  });
+  return [
+    {
+      action: {
+        requestHeaders: [
+          {
+            header: 'cache-control',
+            value: 'max-age=0, no-cache, no-store, must-revalidate',
+            operation: chrome.declarativeNetRequest.HeaderOperation.SET,
+          },
+          {
+            header: 'x-google-cache-control',
+            value: 'max-age=0, no-cache, no-store, must-revalidate',
+            operation: chrome.declarativeNetRequest.HeaderOperation.SET,
+          },
+        ],
+        type: chrome.declarativeNetRequest.RuleActionType.MODIFY_HEADERS,
+      },
+      condition: {
+        urlFilter: '*',
+        tabIds,
+      },
+      id: 314159,
+    },
+  ];
 }
 
 export function toChromeRule(
@@ -84,13 +79,9 @@ export function toChromeRule(
   if (tabIds.length === 0) return undefined;
   const type = convertOperatorToType(rule.operator);
   if (!type) return undefined;
-  const redirect =
-    type === chrome.declarativeNetRequest.RuleActionType.REDIRECT
-      ? {url: rule.destination}
-      : undefined;
   return {
     action: {
-      redirect,
+      redirect: redirect(rule),
       requestHeaders: requestHeaders(rule),
       responseHeaders: responseHeaders(rule),
       type,
@@ -101,6 +92,15 @@ export function toChromeRule(
     },
     id: ruleId,
   };
+}
+
+function redirect(
+  rule: Rule
+): chrome.declarativeNetRequest.Redirect | undefined {
+  if (rule.operator !== Operator.REDIRECT) {
+    return undefined;
+  }
+  return {regexSubstitution: rule.destination};
 }
 
 function requestHeaders(
@@ -170,26 +170,18 @@ export function convertOperatorToType(
   return undefined;
 }
 
-/**
- * Supported operators.
- */
 export enum Operator {
   BLOCK = 'block',
   REDIRECT = 'redirect',
-  INJECT_HTML_PLUGIN = 'injectHtmlPlugin',
   INJECT_HTML_CODE = 'injectHtmlCode',
   INJECT_JS_PLUGIN = 'injectJSPlugin',
   INJECT_JS_MODULE_PLUGIN = 'injectJSModule',
-  INJECT_JS_CODE = 'injectJSCode',
   REMOVE_RESPONSE_HEADER = 'rRespHeader',
   ADD_RESPONSE_HEADER = 'addRespHeader',
   ADD_REQUEST_HEADER = 'addReqHeader',
   INJECT_EXP = 'injectExp',
 }
 
-/**
- * Rule type.
- */
 export interface Rule {
   disabled: boolean;
   target: string;
@@ -198,9 +190,6 @@ export interface Rule {
   isNew?: boolean;
 }
 
-/**
- * Util to get url parameters
- */
 export function getUrlParameter(param: string) {
   const qs = window.location.search.substring(1);
   const partials = qs.split('&');
@@ -212,4 +201,16 @@ export function getUrlParameter(param: string) {
     }
   }
   return res;
+}
+
+// Note that this does not work from a content script. It does not have access
+// to the `chrome.tabs` API.
+export async function getActiveTab(): Promise<chrome.tabs.Tab | undefined> {
+  const activeTabs = await chrome.tabs.query({
+    active: true,
+    currentWindow: true,
+  });
+  const activeTab = activeTabs[0];
+  if (!activeTab?.id || !activeTab?.url) return undefined;
+  return activeTab;
 }

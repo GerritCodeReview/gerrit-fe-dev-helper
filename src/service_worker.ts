@@ -1,26 +1,88 @@
-import {isValidRule, Rule, toChromeRule, getStaticRules} from './utils';
-import {Storage} from './storage';
+import {
+  isValidRule,
+  Rule,
+  toChromeRule,
+  getStaticRules,
+  getActiveTab,
+} from './utils';
+import {StorageUtil} from './storage';
 
-const storage = new Storage();
+const storage = new StorageUtil();
 
 chrome.runtime.onInstalled.addListener(async () => {
+  console.log(`chrome.runtime.onInstalled`);
+  storage.setTabsEnabled({});
   storage.validateRules();
   updateRules();
 });
-chrome.tabs.onActivated.addListener(() => {
-  checkActiveTab();
+
+chrome.runtime.onSuspend.addListener(async () => {
+  console.log(`chrome.runtime.onSuspend`);
 });
-chrome.tabs.onUpdated.addListener(() => {
-  checkActiveTab();
+
+chrome.tabs.onActivated.addListener((activeInfo: {tabId: number}) => {
+  console.log(`chrome.tabs.onActivated ${activeInfo.tabId}`);
+  updateIconPopup(activeInfo.tabId);
 });
+
+chrome.tabs.onUpdated.addListener(
+  (tabId: number, changeInfo: {status: string}) => {
+    // We have to do this (in addition to onActiviated), because Chrome assigns
+    // the default icon and popup *after* the tab is activated, just before the
+    // tab enters 'complete' status.
+    if (changeInfo.status === 'complete') {
+      console.log(`chrome.tabs.onUpdated ${tabId} ${changeInfo.status}`);
+      updateIconPopup(tabId);
+    }
+  }
+);
+
 chrome.tabs.onRemoved.addListener((tabId: number) => {
-  disableHelper(tabId);
+  console.log(`chrome.tabs.onRemoved ${tabId}`);
+  storage.setTabDisabled(tabId);
 });
+
 chrome.storage.onChanged.addListener((changes, namespace) => {
-  const requiresUpdate = Object.keys(changes).some(
+  console.log(
+    `chrome.storage.onChanged ${JSON.stringify(Object.keys(changes))}`
+  );
+  const ruleUpdateRequired = Object.keys(changes).some(
     key => key === 'rules' || key === 'tabsEnabled'
   );
-  if (requiresUpdate) updateRules();
+  if (ruleUpdateRequired) updateRules();
+
+  const iconUpdateRequired = Object.keys(changes).some(
+    key => key === 'tabsEnabled'
+  );
+  if (iconUpdateRequired) updateIconPopup();
+});
+
+// Communication channel between service worker and content_script (or popup).
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  console.log(`onMessage ${request.type}`);
+  // Note that a content script does not have access to its own tab id.
+  // Otherwise we could use `chrome.storage.session.setAccessLevel()` to allow
+  // the content script direct access to the storage of enabled tab ids.
+  if (request.type === 'isEnabled') {
+    // Note that the listener cannot be async, so we cannot await here.
+    storage.isTabEnabledAsync(sender.tab?.id).then(isEnabled => {
+      sendResponse(isEnabled);
+    });
+    // Returning `true` tells Chrome that `sendResponse()` will be called async.
+    return true;
+  }
+});
+
+// This is a click on the extension icon.
+chrome.action.onClicked.addListener(async (tab: chrome.tabs.Tab) => {
+  console.log(`onClicked ${tab.id}`);
+  const isEnabled = await storage.isTabEnabledAsync(tab.id);
+  if (isEnabled) {
+    await storage.setTabDisabled(tab.id);
+  } else {
+    await storage.setTabEnabled(tab.id);
+    chrome.tabs.reload(tab.id);
+  }
 });
 
 /**
@@ -46,82 +108,41 @@ async function updateRules() {
     const chromeRule = toChromeRule(rule, tabIds, ruleId++);
     if (chromeRule) addRules.push(chromeRule);
   }
+
+  console.log(
+    `updateRules() add:${addRules.length} remove:${installedRules.length}`
+  );
   await chrome.declarativeNetRequest.updateSessionRules({
     addRules,
     removeRuleIds: installedRules.map(r => r.id),
   });
 }
 
-// Communication channel between service worker and content_script / popup
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  // An alternative approach to sending a message would be to listen to to
-  // storage updates (chrome.storage.onChanged.addListener). Then the popup
-  // could just call `storage.setTabDisabled()`, and the service worker would
-  // call `disableHelper()` in its event listener.
-  if (request.type === 'disableHelper') {
-    const tabId = request.tab?.id ?? 0;
-    disableHelper(tabId);
+/**
+ * Update the icon and the popup of the extension depending on whether the
+ * extension is enabled for the given tab id. If not tab id is provided, then
+ * the active tab is updated.
+ *
+ * Must be called when the user switches tabs or when the enabled state
+ * changes.
+ *
+ * The icon just changes between gray and green.
+ *
+ * The popup is either enabled or disabled.
+ */
+async function updateIconPopup(tabId?: number) {
+  if (!tabId) {
+    const activeTab = await getActiveTab();
+    if (!activeTab.id) return;
+    tabId = activeTab.id;
   }
-  // Note that a content script does not have access to its own tab id.
-  if (request.type === 'isEnabled') {
-    const activeTabId = storage.getActiveTabIdCached();
-    const tabId = sender.tab?.id ?? activeTabId ?? 0;
-    const isEnabled = storage.isTabEnabledCached(tabId);
-    sendResponse(isEnabled);
-  }
-});
-
-async function enableHelper(tabId: number) {
-  chrome.action.enable(tabId);
-  chrome.action.setIcon({tabId, path: 'icon-32.png'});
-  chrome.action.setPopup({tabId, popup: 'popup.html'});
-  await storage.setTabEnabled(tabId);
-}
-
-async function disableHelper(tabId: number) {
-  chrome.action.disable(tabId);
-  chrome.action.setIcon({tabId, path: 'gray-32.png'});
-  chrome.action.setPopup({tabId, popup: ''});
-  await storage.setTabDisabled(tabId);
-}
-
-chrome.action.onClicked.addListener((tab: chrome.tabs.Tab) => {
-  const isEnabled = storage.isTabEnabledCached(tab.id);
+  const isEnabled = await storage.isTabEnabledAsync(tabId);
+  console.log(`updateIconPopup ${tabId} ${isEnabled}`);
   if (isEnabled) {
-    disableHelper(tab.id);
+    chrome.action.setIcon({tabId, path: 'icon-32.png'});
+    chrome.action.setPopup({tabId, popup: 'popup.html'});
   } else {
-    enableHelper(tab.id);
-    chrome.tabs.reload(tab.id);
+    chrome.action.setIcon({tabId, path: 'gray-32.png'});
+    chrome.action.setPopup({tabId, popup: ''});
   }
-});
-
-// Enable / disable the helper (icon and popup.html) based on state of this tab
-// This will be called when tab was activated
-async function checkActiveTab() {
-  const activeTabs = await chrome.tabs.query({
-    active: true,
-    lastFocusedWindow: true,
-  });
-  const activeTab = activeTabs[0];
-  const activeTabId = activeTab?.id ?? 0;
-  if (!activeTab?.url) return;
-
-  const currentActiveTabId = await storage.getActiveTabIdAsync();
-  if (currentActiveTabId === activeTabId) return;
-
-  const isEnabled = storage.isTabEnabledCached(activeTabId);
-  if (isEnabled) {
-    await enableHelper(activeTabId);
-  } else {
-    await disableHelper(activeTabId);
-  }
-
-  await storage.setActiveTabId(activeTabId);
 }
-
-// TODO: Find out whether listening to `chrome.tabs.onActivated/onUpdated` is sufficient.
-// Note that 0.5 minutes is the smallest permitted value.
-chrome.alarms.create('periodic-check', {periodInMinutes: 0.5});
-chrome.alarms.onAlarm.addListener(alarm => {
-  if (alarm.name === 'periodic-check') checkActiveTab();
-});
