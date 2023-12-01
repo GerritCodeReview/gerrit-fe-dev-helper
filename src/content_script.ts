@@ -126,14 +126,7 @@ chrome.runtime.sendMessage({type: 'isEnabled'}, async isEnabled => {
 
   for (const rule of rules) {
     if (rule.disabled) return;
-    if (rule.operator === Operator.INJECT_HTML_PLUGIN) {
-      onGerritReady().then(() => {
-        const link = document.createElement('link');
-        link.href = rule.destination;
-        link.rel = 'import';
-        document.head.appendChild(link);
-      });
-    } else if (rule.operator === Operator.INJECT_HTML_CODE) {
+    if (rule.operator === Operator.INJECT_HTML_CODE) {
       const el = document.createElement('div');
       el.innerHTML = rule.destination;
       document.body.appendChild(el);
@@ -152,10 +145,6 @@ chrome.runtime.sendMessage({type: 'isEnabled'}, async isEnabled => {
         link.setAttribute('crossorigin', 'anonymous');
         document.head.appendChild(link);
       });
-    } else if (rule.operator === Operator.INJECT_JS_CODE) {
-      const link = document.createElement('script');
-      link.innerHTML = rule.destination;
-      document.head.appendChild(link);
     } else if (rule.operator === Operator.INJECT_EXP) {
       const exps = getUrlParameter('experiment');
       const hasSearchString = !!window.location.search;
