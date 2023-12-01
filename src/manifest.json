@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Gerrit FE Dev Helper",
-  "description": "This extension can help you development on gerrit sites, frontend specifically",
-  "version": "0.0.14",
+  "description": "This extension can help you development on Gerrit sites, frontend specifically",
+  "version": "1.0.0",
   "action": {
     "default_icon": "gray-32.png",
     "default_title": "Gerrit FE Dev Helper"
@@ -13,14 +13,19 @@
   },
   "content_scripts": [
     {
-      "run_at": "document_end",
       "matches": [
         "https://*.git.corp.google.com/*",
         "https://*.staging-git.corp.google.com/*",
         "https://*.googlesource.com/*",
-        "https://gerrit.wikimedia.org/r/*"
+        "https://gerrit.libreoffice.org/*",
+        "https://gerrit.linuxfoundation.org/*",
+        "https://gerrit.wikimedia.org/*",
+        "https://mo-repo.de/*",
+        "https://review.gerrithub.io/*",
+        "https://review.opendev.org/*"
       ],
       "js": [
+        "webcomponents-lite.js",
         "content_script.js"
       ]
     }
@@ -29,16 +34,21 @@
     "extension_pages": "script-src 'self'; object-src 'self';"
   },
   "permissions": [
-    "alarms",
     "activeTab",
     "storage",
     "tabs",
-    "declarativeNetRequest"
+    "declarativeNetRequest",
+    "declarativeNetRequestWithHostAccess"
   ],
   "host_permissions": [
     "https://*.git.corp.google.com/*",
     "https://*.staging-git.corp.google.com/*",
     "https://*.googlesource.com/*",
-    "https://gerrit.wikimedia.org/*"
+    "https://gerrit.libreoffice.org/*",
+    "https://gerrit.linuxfoundation.org/*",
+    "https://gerrit.wikimedia.org/*",
+    "https://mo-repo.de/*",
+    "https://review.gerrithub.io/*",
+    "https://review.opendev.org/*"
   ]
 }
