@@ -18,6 +18,24 @@
       "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "d1526412_e3b08056",
+        "filename": "src/service_worker.ts",
+        "patchSetId": 12
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1013302
+      },
+      "writtenOn": "2023-12-04T10:19:11Z",
+      "side": 1,
+      "message": "Added an enum to `storage.ts`.",
+      "parentUuid": "4bf47f14_a88df5a5",
+      "revId": "4378ae6a580329924126fbc86ce8f385b0d709ba",
+      "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "a9f2f684_5ff66058",
@@ -31,6 +49,24 @@
       "writtenOn": "2023-12-04T09:43:23Z",
       "side": 1,
       "message": "What\u0027s the reason you use Object.keys instead of a Map\u003cnumber, boolean\u003e?",
+      "revId": "4378ae6a580329924126fbc86ce8f385b0d709ba",
+      "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7b47b70a_dd423257",
+        "filename": "src/service_worker.ts",
+        "patchSetId": 12
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1013302
+      },
+      "writtenOn": "2023-12-04T10:19:11Z",
+      "side": 1,
+      "message": "I am not sure whether this is a valid concern, but when I have objects that serialized or persisted in `chrome.storage`, then I prefer plain JSON objects over types such as `Map`. But I have moved this into a method of `StorageUtil`, so outside of the util you don\u0027t have to care.",
+      "parentUuid": "a9f2f684_5ff66058",
       "revId": "4378ae6a580329924126fbc86ce8f385b0d709ba",
       "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153"
     },
@@ -52,6 +88,24 @@
       "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "0c6178a7_5d426c36",
+        "filename": "src/service_worker.ts",
+        "patchSetId": 12
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1013302
+      },
+      "writtenOn": "2023-12-04T10:19:11Z",
+      "side": 1,
+      "message": "Ah, only seeing this now after having it done already. :-)",
+      "parentUuid": "9ae2e26b_30239ec4",
+      "revId": "4378ae6a580329924126fbc86ce8f385b0d709ba",
+      "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "27af1e38_1a486118",
@@ -69,6 +123,24 @@
       "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "c321c59d_8d519e67",
+        "filename": "src/service_worker.ts",
+        "patchSetId": 12
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 1013302
+      },
+      "writtenOn": "2023-12-04T10:19:11Z",
+      "side": 1,
+      "message": "Chrome needs to know for which tabs the rules should apply.\n\nYes, the same rules apply to all tabs that have turned the Dev Helper on. You cannot inject a plugin on one tab without doing so in another tab. You can only turn the entire Dev Helper with all its current rules on and off per tab.",
+      "parentUuid": "27af1e38_1a486118",
+      "revId": "4378ae6a580329924126fbc86ce8f385b0d709ba",
+      "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "409a5f75_e64845be",
@@ -82,6 +154,24 @@
       "writtenOn": "2023-12-04T09:43:23Z",
       "side": 1,
       "message": "What about cloning to avoid that someone makes a modification.",
+      "revId": "4378ae6a580329924126fbc86ce8f385b0d709ba",
+      "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6380c926_e9ccd773",
+        "filename": "src/utils.ts",
+        "patchSetId": 12
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1013302
+      },
+      "writtenOn": "2023-12-04T10:19:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "409a5f75_e64845be",
       "revId": "4378ae6a580329924126fbc86ce8f385b0d709ba",
       "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153"
     },
@@ -109,6 +199,30 @@
       "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "c9d5818f_c9f5aaeb",
+        "filename": "src/utils.ts",
+        "patchSetId": 12
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 1013302
+      },
+      "writtenOn": "2023-12-04T10:19:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "aaf4e94e_215e7c2b",
+      "range": {
+        "startLine": 70,
+        "startChar": 0,
+        "endLine": 84,
+        "endChar": 4
+      },
+      "revId": "4378ae6a580329924126fbc86ce8f385b0d709ba",
+      "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "dbacd395_2eac9a8d",
@@ -122,6 +236,30 @@
       "writtenOn": "2023-12-04T09:43:23Z",
       "side": 1,
       "message": "Nit: Have you considered a switch statement?  It seems more stylistically suited here.",
+      "range": {
+        "startLine": 148,
+        "startChar": 0,
+        "endLine": 159,
+        "endChar": 3
+      },
+      "revId": "4378ae6a580329924126fbc86ce8f385b0d709ba",
+      "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e7a615af_345198c7",
+        "filename": "src/utils.ts",
+        "patchSetId": 12
+      },
+      "lineNbr": 159,
+      "author": {
+        "id": 1013302
+      },
+      "writtenOn": "2023-12-04T10:19:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "dbacd395_2eac9a8d",
       "range": {
         "startLine": 148,
         "startChar": 0,
