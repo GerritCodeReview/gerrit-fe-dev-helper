@@ -16,6 +16,24 @@
       "message": "Unrelated change?",
       "revId": "4d273fcf3caa5357dc10f714655121b508c34d0d",
       "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6f51798e_7efbbf71",
+        "filename": "src/manifest.json",
+        "patchSetId": 16
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1013302
+      },
+      "writtenOn": "2023-12-04T10:19:04Z",
+      "side": 0,
+      "message": "Yeah, this is from https://developer.chrome.com/docs/extensions/migrating/api-calls/\n\nHaving a separate change for just that seemed too small. Updated the commmit message.",
+      "parentUuid": "840bd888_b4f8ebd4",
+      "revId": "4d273fcf3caa5357dc10f714655121b508c34d0d",
+      "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153"
     }
   ]
 }
