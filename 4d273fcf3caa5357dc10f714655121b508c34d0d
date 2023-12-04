@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ba90f642_b56aadcf",
+        "filename": ".prettierrc",
+        "patchSetId": 7
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 1139611
+      },
+      "writtenOn": "2023-12-04T09:05:21Z",
+      "side": 1,
+      "message": "What is bracketSpacing?",
+      "revId": "4d273fcf3caa5357dc10f714655121b508c34d0d",
+      "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bbe6d024_f598a6d7",
+        "filename": ".prettierrc",
+        "patchSetId": 7
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1139611
+      },
+      "writtenOn": "2023-12-04T09:05:21Z",
+      "side": 1,
+      "message": "Why do we need this?",
+      "revId": "4d273fcf3caa5357dc10f714655121b508c34d0d",
+      "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e13b22d7_628fcc49",
+        "filename": ".prettierrc",
+        "patchSetId": 7
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1139611
+      },
+      "writtenOn": "2023-12-04T09:05:21Z",
+      "side": 1,
+      "message": "Why avoid?",
+      "revId": "4d273fcf3caa5357dc10f714655121b508c34d0d",
+      "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153"
+    }
+  ]
+}
