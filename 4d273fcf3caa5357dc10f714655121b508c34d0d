@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "840bd888_b4f8ebd4",
+        "filename": "src/manifest.json",
+        "patchSetId": 16
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1139611
+      },
+      "writtenOn": "2023-12-04T09:27:47Z",
+      "side": 0,
+      "message": "Unrelated change?",
+      "revId": "4d273fcf3caa5357dc10f714655121b508c34d0d",
+      "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153"
+    }
+  ]
+}

@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a3167a31_3103e8b1",
+        "filename": "src/popup.ts",
+        "patchSetId": 16
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 1139611
+      },
+      "writtenOn": "2023-12-04T09:27:47Z",
+      "side": 1,
+      "message": "Consider using `this.requestUpdate()`",
+      "revId": "b3cdca5a3ff8b8b36f4b06b8e47532a7fdc8f9e8",
+      "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "63a83b2c_6034dc45",
+        "filename": "src/popup.ts",
+        "patchSetId": 16
+      },
+      "lineNbr": 110,
+      "author": {
+        "id": 1139611
+      },
+      "writtenOn": "2023-12-04T09:27:47Z",
+      "side": 1,
+      "message": "Micro-performance nit: How expensive is this call? We seem to be calling it twice here.\n\nCould we make activeTab an optional parameter to refresh in case it\u0027s already fetched?",
+      "revId": "b3cdca5a3ff8b8b36f4b06b8e47532a7fdc8f9e8",
+      "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "13f324cb_c60070c0",
+        "filename": "src/storage.ts",
+        "patchSetId": 16
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1139611
+      },
+      "writtenOn": "2023-12-04T09:27:47Z",
+      "side": 1,
+      "message": "Should this function be private?\n```suggestion\n  private async getTabsEnabled(): Promise\u003cTabsEnabled\u003e {\n```",
+      "revId": "b3cdca5a3ff8b8b36f4b06b8e47532a7fdc8f9e8",
+      "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "98a4ee45_29c3bee6",
+        "filename": "src/storage.ts",
+        "patchSetId": 16
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1139611
+      },
+      "writtenOn": "2023-12-04T09:27:47Z",
+      "side": 1,
+      "message": "Should this function be private?\n```suggestion\n  private async setTabsEnabled(tabsEnabled: TabsEnabled) {\n```",
+      "revId": "b3cdca5a3ff8b8b36f4b06b8e47532a7fdc8f9e8",
+      "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153"
+    }
+  ]
+}
