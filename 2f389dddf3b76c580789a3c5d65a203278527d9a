@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "eafb3bb8_c20d7277",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 16
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1139611
+      },
+      "writtenOn": "2023-12-04T10:17:29Z",
+      "side": 1,
+      "message": "Thanks!",
+      "revId": "2f389dddf3b76c580789a3c5d65a203278527d9a",
+      "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "04712fcb_1fdf7337",
+        "filename": "README.md",
+        "patchSetId": 16
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1139611
+      },
+      "writtenOn": "2023-12-04T10:17:29Z",
+      "side": 1,
+      "message": "Missing period at the end.\n```suggestion\n- use `injectJsModule`, this will load the js with `type\u003d\"module\"`, and due to restriction of `type\u003d\"module\"`, Gerrit won\u0027t be able to recognize the plugin without a proper url set when calling `Gerrit.install`, so you also need to tweak your code to call `Gerrit.install(callback, undefined, \u0027http://localhost:8081/plugins_/checks/gr-checks/gr-checks.js\u0027)` to let Gerrit treat it as a legit plugin.\n```",
+      "revId": "2f389dddf3b76c580789a3c5d65a203278527d9a",
+      "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153"
+    }
+  ]
+}
