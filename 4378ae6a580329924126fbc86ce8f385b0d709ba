@@ -1,0 +1,135 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4bf47f14_a88df5a5",
+        "filename": "src/service_worker.ts",
+        "patchSetId": 12
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1139611
+      },
+      "writtenOn": "2023-12-04T09:43:23Z",
+      "side": 1,
+      "message": "Where are these keys defined?",
+      "revId": "4378ae6a580329924126fbc86ce8f385b0d709ba",
+      "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a9f2f684_5ff66058",
+        "filename": "src/service_worker.ts",
+        "patchSetId": 12
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1139611
+      },
+      "writtenOn": "2023-12-04T09:43:23Z",
+      "side": 1,
+      "message": "What\u0027s the reason you use Object.keys instead of a Map\u003cnumber, boolean\u003e?",
+      "revId": "4378ae6a580329924126fbc86ce8f385b0d709ba",
+      "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9ae2e26b_30239ec4",
+        "filename": "src/service_worker.ts",
+        "patchSetId": 12
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1139611
+      },
+      "writtenOn": "2023-12-04T09:43:23Z",
+      "side": 1,
+      "message": "This conversion feels like it belongs inside of the storage library.",
+      "revId": "4378ae6a580329924126fbc86ce8f385b0d709ba",
+      "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "27af1e38_1a486118",
+        "filename": "src/service_worker.ts",
+        "patchSetId": 12
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 1139611
+      },
+      "writtenOn": "2023-12-04T09:43:23Z",
+      "side": 1,
+      "message": "What do you need the `tabIds` for?\n\nDo I understand correctly that this means that the same rules apply across all tabs that have the chrome-extension enabled?",
+      "revId": "4378ae6a580329924126fbc86ce8f385b0d709ba",
+      "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "409a5f75_e64845be",
+        "filename": "src/utils.ts",
+        "patchSetId": 12
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1139611
+      },
+      "writtenOn": "2023-12-04T09:43:23Z",
+      "side": 1,
+      "message": "What about cloning to avoid that someone makes a modification.",
+      "revId": "4378ae6a580329924126fbc86ce8f385b0d709ba",
+      "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "aaf4e94e_215e7c2b",
+        "filename": "src/utils.ts",
+        "patchSetId": 12
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 1139611
+      },
+      "writtenOn": "2023-12-04T09:43:23Z",
+      "side": 1,
+      "message": "Rather than this approach which first fetches the type an then creates the action with a bunch of actions returning `undefined`.\n\nWhat if instead:\n\n\n```suggestion\nconst action \u003d convertRuleToAction(rule);\nif (!action) return undefined;\nreturn { action,\n    condition: {\n      regexFilter: rule.target,\n      tabIds,\n    },\n    id: ruleId,\n  };\n```\n\n```\nfunction convertRuleToAction(rule) {\n  switch rule.operator {\n    case Operator.REDIRECT: return { redirect: {regexSubstitution: rule.destination}};\n    //\n    ...\n  }\n}\n```",
+      "range": {
+        "startLine": 70,
+        "startChar": 0,
+        "endLine": 84,
+        "endChar": 4
+      },
+      "revId": "4378ae6a580329924126fbc86ce8f385b0d709ba",
+      "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "dbacd395_2eac9a8d",
+        "filename": "src/utils.ts",
+        "patchSetId": 12
+      },
+      "lineNbr": 159,
+      "author": {
+        "id": 1139611
+      },
+      "writtenOn": "2023-12-04T09:43:23Z",
+      "side": 1,
+      "message": "Nit: Have you considered a switch statement?  It seems more stylistically suited here.",
+      "range": {
+        "startLine": 148,
+        "startChar": 0,
+        "endLine": 159,
+        "endChar": 3
+      },
+      "revId": "4378ae6a580329924126fbc86ce8f385b0d709ba",
+      "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153"
+    }
+  ]
+}
