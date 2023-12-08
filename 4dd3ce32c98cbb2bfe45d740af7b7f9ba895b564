@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cc67399f_c1355f19",
+        "filename": "release-notes.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1148215
+      },
+      "writtenOn": "2023-12-08T12:44:30Z",
+      "side": 1,
+      "message": "This line seems overly specific to me not knowing what either of those names mean. But otherwise looks good.",
+      "range": {
+        "startLine": 7,
+        "startChar": 4,
+        "endLine": 7,
+        "endChar": 47
+      },
+      "revId": "4dd3ce32c98cbb2bfe45d740af7b7f9ba895b564",
+      "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153"
+    }
+  ]
+}
