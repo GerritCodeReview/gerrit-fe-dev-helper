@@ -1,3 +1,19 @@
+## v1
+
+#### v1.0.0
+
+- Migrate to Manifest V3
+  - Restrict the permissions to only run on a specific list of hosts
+  - Refactor background.ts to service_worker.ts
+  - Migrate request/response manipulation to `chrome.declarativeNetRequest` API
+- New default rules
+- Remove support for INJECT_HTML_PLUGIN (obsolete)
+- Remove support for INJECT_JS_CODE (unsupported by Manifest V3)
+- Convert HTML snippets to Lit elements
+- Add prettier config and reformat all files
+
+## v0
+
 #### v0.0.13/14
 
 - Fix `content_scripts.matches` patterns
