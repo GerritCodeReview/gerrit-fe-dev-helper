@@ -125,7 +125,7 @@ chrome.runtime.sendMessage({type: 'isEnabled'}, async isEnabled => {
   const rules = await storage.getRules();
 
   for (const rule of rules) {
-    if (rule.disabled) return;
+    if (rule.disabled) continue;
     if (rule.operator === Operator.INJECT_HTML_CODE) {
       const el = document.createElement('div');
       el.innerHTML = rule.destination;
