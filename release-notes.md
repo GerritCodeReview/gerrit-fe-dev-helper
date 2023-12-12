@@ -1,5 +1,11 @@
 ## v1
 
+#### v1.0.1
+
+- Fix rules to also work with non-Google hosted Gerrit
+- Add a `inject css` rule
+- P1 fix: Continue rules processing after first disabled one
+
 #### v1.0.0
 
 - Migrate to Manifest V3
@@ -11,6 +17,7 @@
 - Remove support for INJECT_JS_CODE (unsupported by Manifest V3)
 - Convert HTML snippets to Lit elements
 - Add prettier config and reformat all files
+- Bumped lit version to 3.1.0
 
 ## v0
 
