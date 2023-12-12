@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e8d1b312_4d313ea0",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1010788
+      },
+      "writtenOn": "2023-12-12T21:24:03Z",
+      "side": 1,
+      "message": "The idea is to shows the bottom corner tooltip in yellow/warning and turn it red when an error occurs.  Then I can\u0027t seem to make it able to intercept errors, I need to dig more.",
+      "revId": "7575e0dfcc30c26e6c29b9f2d6d4488227a6d727",
+      "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153"
+    }
+  ]
+}
