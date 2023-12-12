@@ -20,6 +20,7 @@ export function isValidRule(rule: Rule) {
 
 export function isInjectRule(rule: Rule) {
   return [
+    Operator.INJECT_CSS,
     Operator.INJECT_JS_MODULE_PLUGIN,
     Operator.INJECT_JS_PLUGIN,
     Operator.INJECT_HTML_CODE,
@@ -131,6 +132,7 @@ function headerInfos(
 export enum Operator {
   BLOCK = 'block',
   REDIRECT = 'redirect',
+  INJECT_CSS = 'injectCss',
   INJECT_HTML_CODE = 'injectHtmlCode',
   INJECT_JS_PLUGIN = 'injectJSPlugin',
   INJECT_JS_MODULE_PLUGIN = 'injectJSModule',

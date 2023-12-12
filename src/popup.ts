@@ -313,6 +313,7 @@ export class GdhRuleItem extends LitElement {
   operators = [
     Operator.BLOCK,
     Operator.REDIRECT,
+    Operator.INJECT_CSS,
     Operator.INJECT_HTML_CODE,
     Operator.INJECT_JS_PLUGIN,
     Operator.INJECT_JS_MODULE_PLUGIN,

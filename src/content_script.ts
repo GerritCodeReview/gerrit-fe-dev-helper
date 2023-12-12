@@ -125,11 +125,18 @@ chrome.runtime.sendMessage({type: 'isEnabled'}, async isEnabled => {
   const rules = await storage.getRules();
 
   for (const rule of rules) {
-    if (rule.disabled) return;
+    if (rule.disabled) continue;
     if (rule.operator === Operator.INJECT_HTML_CODE) {
       const el = document.createElement('div');
       el.innerHTML = rule.destination;
       document.body.appendChild(el);
+    } else if (rule.operator === Operator.INJECT_CSS) {
+      onGerritReady().then(() => {
+        const link = document.createElement('link');
+        link.setAttribute('rel', 'stylesheet');
+        link.setAttribute('href', rule.destination);
+        document.head.appendChild(link);
+      });
     } else if (rule.operator === Operator.INJECT_JS_PLUGIN) {
       onGerritReady().then(() => {
         const link = document.createElement('script');
