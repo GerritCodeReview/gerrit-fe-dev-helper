@@ -1,13 +1,13 @@
 [
   {
     "disabled": false,
-    "target": "https://cdn.googlesource.com/polygerrit_ui/[0-9.]+/elements/.*",
+    "target": ".*/gr-app.js",
     "operator": "redirect",
     "destination": "http://localhost:8081/elements/gr-app.js"
   },
   {
     "disabled": false,
-    "target": "https://cdn.googlesource.com/polygerrit_ui/[0-9.]+/styles/",
+    "target": ".*/styles/",
     "operator": "redirect",
     "destination": "http://localhost:8081/styles/"
   },
