@@ -87,12 +87,14 @@ export class HelperTip extends LitElement {
     console.error = (...args) => {
       original.call(console, ...args);
       this.numErrors++;
+      this.requestUpdate();
     };
   }
 
   render() {
     const errors = this.numErrors > 0 ? ` (${this.numErrors} js errors)` : '';
-    return html`<div>Gerrit dev helper is enabled ${errors}</div>`;
+    return html`<div class=${this.numErrors > 0 ? 'hasErrors': '' }>
+        Gerrit dev helper is enabled ${errors}</div>`;
   }
 
   static get styles() {
@@ -103,12 +105,17 @@ export class HelperTip extends LitElement {
         position: fixed;
         bottom: 0;
         right: 0;
-        background-color: red;
       }
       div {
         color: white;
         font-weight: bold;
         padding: 10px;
+        color: var(--warning-foreground);
+        background-color: var(--warning-background);
+      }
+      .hasErrors {
+        color: var(--error-foreground);
+        background-color: var(--error-background);
       }
     `;
   }
