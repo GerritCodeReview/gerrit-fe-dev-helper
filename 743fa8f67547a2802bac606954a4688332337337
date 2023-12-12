@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b384066d_af342a70",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1010788
+      },
+      "writtenOn": "2023-12-12T14:37:37Z",
+      "side": 1,
+      "message": "The faulty diff is at https://gerrit-review.googlesource.com/c/gerrit-fe-dev-helper/+/394955/18/src/content_script.ts\n\nPreviously the code had:\n\n    // load\n    rules.filter(isInjectRule).forEach(rule \u003d\u003e {\n      if (rule.disabled) return;\n\nWhich skips an iteration of the filter/forEach.\n\n\nIn the new code it became a good old for loop:\n\n  for (const rule of rules) {\n    if (rule.disabled) return;\n\nFor which the return statement causes an early exit and skips any remaining rules :)",
+      "revId": "743fa8f67547a2802bac606954a4688332337337",
+      "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153"
+    }
+  ]
+}
