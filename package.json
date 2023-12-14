@@ -1,5 +1,5 @@
 {
-  "version": "1.0.1",
+  "version": "1.0.2",
   "name": "gerrit-fe-dev-helper",
   "license": "MIT",
   "dependencies": {
@@ -16,9 +16,8 @@
   "scripts": {
     "assets:html": "cp src/*.html dist",
     "assets:json": "cp src/*.json dist",
-    "assets:js": "cp src/*.js dist",
     "assets:image": "cp src/*.png dist",
-    "assets": "npm run assets:html && npm run assets:json && npm run assets:js && npm run assets:image",
+    "assets": "npm run assets:html && npm run assets:json && npm run assets:image",
     "zip": "cd dist && zip gerrit_fe_dev_helper.zip -r ./* && mv gerrit_fe_dev_helper.zip ../",
     "webpack": "webpack --config webpack/webpack.config.js",
     "build": "npm run clean && mkdir -p dist && npm run webpack && npm run assets && npm run zip",

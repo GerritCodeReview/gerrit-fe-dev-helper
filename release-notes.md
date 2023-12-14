@@ -1,5 +1,9 @@
 ## v1
 
+#### v1.0.2
+
+- Fix injecting JS plugins, remove webcomponents-lite.js
+
 #### v1.0.1
 
 - Fix rules to also work with non-Google hosted Gerrit

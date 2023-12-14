@@ -9,6 +9,7 @@ module.exports = {
     popup: path.join(__dirname, srcDir + 'popup.ts'),
     service_worker: path.join(__dirname, srcDir + 'service_worker.ts'),
     content_script: path.join(__dirname, srcDir + 'content_script.ts'),
+    elements: path.join(__dirname, srcDir + 'elements.ts'),
   },
   optimization: {
     minimize: MODE === 'production',

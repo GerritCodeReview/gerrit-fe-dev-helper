@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Gerrit FE Dev Helper",
   "description": "This extension can help you development on Gerrit sites, frontend specifically",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "action": {
     "default_icon": "gray-32.png",
     "default_title": "Gerrit FE Dev Helper"
@@ -26,8 +26,17 @@
         "https://review.opendev.org/*"
       ],
       "js": [
-        "webcomponents-lite.js",
         "content_script.js"
+      ]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "elements.js"
+      ],
+      "matches": [
+        "https://*/*"
       ]
     }
   ],
