@@ -1,7 +1,9 @@
 import {Operator, getUrlParameter} from './utils';
-import {LitElement, html, css, render} from 'lit';
-import {customElement, property, state} from 'lit/decorators.js';
 import {StorageUtil} from './storage';
+
+const link = document.createElement('script');
+link.setAttribute('src', chrome.runtime.getURL('elements.js'));
+document.head.appendChild(link);
 
 function nextTick(ts: number) {
   return new Promise(resolve => {
@@ -47,79 +49,13 @@ const onGerritReady = async () => {
 
 let numOfSnackBars = 0;
 
-@customElement('gdh-snackbar')
-export class HelperSnackbar extends LitElement {
-  @property({type: String}) message = '';
-
-  @property({type: Number}) position = 0;
-
-  render() {
-    this.style.top = `${this.position * 40}px`;
-    return html`<div>${this.message}</div>`;
-  }
-
-  static get styles() {
-    return css`
-      :host {
-        position: absolute;
-        top: 0px;
-        right: 0px;
-        background-color: black;
-        color: white;
-        padding: 10px;
-        z-index: 100;
-      }
-    `;
-  }
-}
-
-@customElement('gdh-tip')
-export class HelperTip extends LitElement {
-  @state() numErrors = 0;
-
-  constructor() {
-    super();
-    this.interceptErrors();
-  }
-
-  interceptErrors() {
-    let original = console.error;
-    console.error = (...args) => {
-      original.call(console, ...args);
-      this.numErrors++;
-    };
-  }
-
-  render() {
-    const errors = this.numErrors > 0 ? ` (${this.numErrors} js errors)` : '';
-    return html`<div>Gerrit dev helper is enabled ${errors}</div>`;
-  }
-
-  static get styles() {
-    return css`
-      :host {
-        z-index: 10000;
-        display: block;
-        position: fixed;
-        bottom: 0;
-        right: 0;
-        background-color: red;
-      }
-      div {
-        color: white;
-        font-weight: bold;
-        padding: 10px;
-      }
-    `;
-  }
-}
-
 // Apply injection rules to Gerrit sites if enabled
 chrome.runtime.sendMessage({type: 'isEnabled'}, async isEnabled => {
   if (!isEnabled) return;
 
   console.log('Gerrit FE Dev Helper is enabled.');
-  render(html`<gdh-tip></gdh-tip>`, document.body);
+  const tip = document.createElement('gdh-tip');
+  document.body.appendChild(tip);
 
   const storage = new StorageUtil();
   const rules = await storage.getRules();
@@ -189,16 +125,11 @@ chrome.runtime.sendMessage({type: 'isEnabled'}, async isEnabled => {
         .catch(e => {
           const message = `You may have an invalid redirect rule from ${rule.target} to ${rule.destination}`;
           const id = `snack-${numOfSnackBars}`;
-          render(
-            html`
-              <gdh-snackbar
-                id=${id}
-                .message=${message}
-                .position=${numOfSnackBars}
-              ></gdh-snackbar>
-            `,
-            document.body
-          );
+          const snackbar = document.createElement('gdh-snackbar');
+          snackbar.id = id;
+          snackbar.setAttribute('message', message);
+          snackbar.setAttribute('position', `${numOfSnackBars}`);
+          document.body.appendChild(snackbar);
           numOfSnackBars++;
 
           // in case body is unresolved
