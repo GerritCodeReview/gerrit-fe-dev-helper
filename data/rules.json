@@ -12,16 +12,10 @@
     "destination": "http://localhost:8081/styles/"
   },
   {
-    "destination": "http://localhost:8081/existing-plugin.js",
+    "destination": "http://localhost:8081/my-plugin.js",
     "disabled": true,
     "operator": "redirect",
-    "target": "https://cdn.googlesource.com/polygerrit_assets/.*/plugins/.*/existing-plugin.js"
-  },
-  {
-    "destination": "http://localhost:8081/my-new-plugin.js",
-    "disabled": true,
-    "operator": "injectJSPlugin",
-    "target": ""
+    "target": "https://cdn.googlesource.com/polygerrit_assets/.*/plugins/.*/my-plugin.js"
   },
   {
     "disabled": false,

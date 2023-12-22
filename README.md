@@ -55,31 +55,24 @@ npx http-server -c-1 --cors
 The extension comes with a set of [default rules](./data/rules.json),
 but you can change the rules by clicking the extension icon again.
 
-The extension supports six different type of rules:
+The extension supports different type of rules:
 
 1. block: block a certain request
 2. redirect: redirect a url to another url
 3. injectHtmlCode: inject a piece of html code to the page
-4. injectJsPlugin: inject a js plugin(url) to the site
-5. injectJsModule: inject a js module file to the site (type="module" will be added when load script)
-6. addReqHeader: to add arbitrary header when you send a request
-7. addRespHeader: to add arbitrary header when you receive a request
-8. rRespHeader: to remove arbitrary header on any response
-
-The option to inject any plugins (`injectJsPlugin`) is meant to help you develop your plugins for your Gerrit sites. As they are served from your local HTTP server, you do not need to deploy them on the target Gerrit server.
+4. addReqHeader: to add arbitrary header when you send a request
+5. addRespHeader: to add arbitrary header when you receive a request
+6. rRespHeader: to remove arbitrary header on any response
 
 #### How to use dev helper with js plugins
 
-For single-file js plugins, use `injectJsPlugin` rule or use `redirect` if it is an exising js plugin.
+For existing plugins just `redirect` from the where the plugin is normally loaded from to
+`http://localhost:8081/plugins/my-plugin.js` and put your local plugin file into the
+`polygerrit-ui/app/plugins` folder.
 
-For multi-file modularized js plugins (you have import / export in source code), you have two options:
-
-1. compile them and then treat it as single-file js plugin
-2. or if you want to load source code as it is
-
-- use `injectJsModule`, this will load the js with `type="module"`, and due to restriction of `type="module"`, Gerrit won't be able to recognize the plugin without a proper url set when calling `Gerrit.install`, so you also need to tweak your code to call `Gerrit.install(callback, undefined, 'http://localhost:8081/plugins_/checks/gr-checks/gr-checks.js')` to let Gerrit treat it as a legit plugin.
-
-Either way, you need to `block` the existing plugin if its already on the page.
+For new plugins you also have to use a `redirect` rule, because the Chrome extension is not allowed
+to inject JavaScript from arbitrary source by Content Security Policy. The easiest option is to
+pick the most simple or irrelevant plugin that your Gerrit server has, and redirect from that.
 
 ### Testing a new version
 

@@ -73,21 +73,6 @@ chrome.runtime.sendMessage({type: 'isEnabled'}, async isEnabled => {
         link.setAttribute('href', rule.destination);
         document.head.appendChild(link);
       });
-    } else if (rule.operator === Operator.INJECT_JS_PLUGIN) {
-      onGerritReady().then(() => {
-        const link = document.createElement('script');
-        link.setAttribute('src', rule.destination);
-        link.setAttribute('crossorigin', 'anonymous');
-        document.head.appendChild(link);
-      });
-    } else if (rule.operator === Operator.INJECT_JS_MODULE_PLUGIN) {
-      onGerritReady().then(() => {
-        const link = document.createElement('script');
-        link.setAttribute('type', 'module');
-        link.setAttribute('src', rule.destination);
-        link.setAttribute('crossorigin', 'anonymous');
-        document.head.appendChild(link);
-      });
     } else if (rule.operator === Operator.INJECT_EXP) {
       const exps = getUrlParameter('experiment');
       const hasSearchString = !!window.location.search;

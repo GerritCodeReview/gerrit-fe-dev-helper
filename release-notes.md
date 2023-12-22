@@ -1,5 +1,10 @@
 ## v1
 
+#### v1.1.0
+
+- Remove support for INJECT_JS_PLUGIN and INJECT_JS_MODULE_PLUGIN.
+  Content Security Policy for extensions does not allow injecting arbitrary JS.
+
 #### v1.0.2
 
 - Fix injecting JS plugins, remove webcomponents-lite.js

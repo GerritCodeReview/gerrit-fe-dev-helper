@@ -21,8 +21,6 @@ export function isValidRule(rule: Rule) {
 export function isInjectRule(rule: Rule) {
   return [
     Operator.INJECT_CSS,
-    Operator.INJECT_JS_MODULE_PLUGIN,
-    Operator.INJECT_JS_PLUGIN,
     Operator.INJECT_HTML_CODE,
     Operator.INJECT_EXP,
   ].some(op => op === rule.operator);
@@ -134,8 +132,6 @@ export enum Operator {
   REDIRECT = 'redirect',
   INJECT_CSS = 'injectCss',
   INJECT_HTML_CODE = 'injectHtmlCode',
-  INJECT_JS_PLUGIN = 'injectJSPlugin',
-  INJECT_JS_MODULE_PLUGIN = 'injectJSModule',
   REMOVE_RESPONSE_HEADER = 'rRespHeader',
   ADD_RESPONSE_HEADER = 'addRespHeader',
   ADD_REQUEST_HEADER = 'addReqHeader',
