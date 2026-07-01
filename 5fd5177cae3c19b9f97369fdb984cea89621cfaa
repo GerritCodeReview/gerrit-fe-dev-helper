@@ -67,6 +67,23 @@
       "message": "git delete clone \"https://gerrit.googlesource.com/plugins/delete-project\"",
       "revId": "5fd5177cae3c19b9f97369fdb984cea89621cfaa",
       "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0e780063_de838d57",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 4737633
+      },
+      "writtenOn": "2026-07-01T14:32:34Z",
+      "side": 1,
+      "message": "remove",
+      "revId": "5fd5177cae3c19b9f97369fdb984cea89621cfaa",
+      "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153"
     }
   ],
   "submitRequirementResults": [
